@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Александра](https://up.htmlacademy.ru/ecmascript/10/user/1262035).
-* Наставник: `Неизвестно`.
+* Наставник: `Андрей Фидельман`.
 
 ---
 
