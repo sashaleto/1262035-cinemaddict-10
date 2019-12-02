@@ -5,10 +5,6 @@ const EXTRA_FILMS_COUNT = 2;
 const mainElement = document.querySelector(`.main`);
 const headerElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
-let boardElement;
-let allFilmsList;
-let allFilmsContainer;
-let extraFilmsContainer;
 
 // Карточка фильма
 const createFilmCArdTemplate = () => {
@@ -272,24 +268,23 @@ renderComponent(mainElement, createMainNavigationTemplate(), `beforeend`);
 renderComponent(mainElement, createMainFiltersTemplate(), `beforeend`);
 renderComponent(mainElement, createFilmsBoardTemplate(), `beforeend`);
 
-boardElement = mainElement.querySelector(`.films`);
+const boardElement = mainElement.querySelector(`.films`);
 renderComponent(boardElement, createFilmListTemplate(`films-list`, `All movies. Upcoming`, true), `beforeend`);
 renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Top rated`, false), `beforeend`);
 renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Most commented`, false), `beforeend`);
 
-allFilmsList = mainElement.querySelector(`.films-list`);
-allFilmsContainer = mainElement.querySelector(`.films-list .films-list__container`);
-extraFilmsContainer = mainElement.querySelectorAll(`.films-list--extra .films-list__container`);
-
+const allFilmsContainer = mainElement.querySelector(`.films-list .films-list__container`);
 for (let i = 0; i < FILMS_COUNT; i++) {
   renderComponent(allFilmsContainer, createFilmCArdTemplate(), `beforeend`);
 }
 
+const extraFilmsContainer = mainElement.querySelectorAll(`.films-list--extra .films-list__container`);
 extraFilmsContainer.forEach((container) => {
   for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
     renderComponent(container, createFilmCArdTemplate(), `beforeend`);
   }
 });
 
+const allFilmsList = mainElement.querySelector(`.films-list`);
 renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);
 renderComponent(footerElement, createFilmPopupTemplate(), `afterend`);
