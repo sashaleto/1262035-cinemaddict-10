@@ -1,5 +1,3 @@
-'use strict';
-
 const FILMS_COUNT = 5;
 const EXTRA_FILMS_COUNT = 2;
 const mainElement = document.querySelector(`.main`);
