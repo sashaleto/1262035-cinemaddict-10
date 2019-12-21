@@ -3,9 +3,11 @@ import {createMainNavigationTemplate} from './components/main-navigation';
 import {createMainFiltersTemplate} from './components/main-filters';
 import {createFilmsBoardTemplate} from './components/board';
 import {createFilmListTemplate} from './components/films-list';
-import {createFilmCArdTemplate} from './components/film-card';
+import {createFilmCardTemplate} from './components/film-card';
 import {createFilmPopupTemplate} from './components/film-popup';
 import {createShowMoreBtnTemplate} from './components/show-more-button';
+
+import {generateFilms} from "./moks/films";
 
 const FILMS_COUNT = 5;
 const EXTRA_FILMS_COUNT = 2;
@@ -29,14 +31,16 @@ renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Top r
 renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Most commented`, false), `beforeend`);
 
 const allFilmsContainer = mainElement.querySelector(`.films-list .films-list__container`);
+const films = generateFilms(FILMS_COUNT);
+
 for (let i = 0; i < FILMS_COUNT; i++) {
-  renderComponent(allFilmsContainer, createFilmCArdTemplate(), `beforeend`);
+  renderComponent(allFilmsContainer, createFilmCardTemplate(films[i]), `beforeend`);
 }
 
 const extraFilmsContainer = mainElement.querySelectorAll(`.films-list--extra .films-list__container`);
 extraFilmsContainer.forEach((container) => {
   for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
-    renderComponent(container, createFilmCArdTemplate(), `beforeend`);
+    renderComponent(container, createFilmCardTemplate(films[1]), `beforeend`);
   }
 });
 
