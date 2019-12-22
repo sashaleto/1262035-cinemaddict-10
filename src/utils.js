@@ -25,3 +25,21 @@ export const runtimeFormat = (time) => {
 
   return `${hours}h ${minutes}m`;
 };
+
+export const getFavoritesFilmsCount = (films) => {
+  return films.filter((film) => {
+    return !!film.userDetails.favorite;
+  }).length;
+};
+
+export const getWatchedFilmsCount = (films) => {
+  return films.filter((film) => {
+    return !!film.userDetails.watchingDate;
+  }).length;
+};
+
+export const getWatchlistCount = (films) => {
+  return films.filter((film) => {
+    return !!film.userDetails.watchlist;
+  }).length;
+};

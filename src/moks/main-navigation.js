@@ -1,20 +1,4 @@
-const getFavoritesFilmsCount = (films) => {
-  return films.filter((film) => {
-    return !!film.userDetails.favorite;
-  }).length;
-};
-
-const getWatchedFilmsCount = (films) => {
-  return films.filter((film) => {
-    return !!film.userDetails.watchingDate;
-  }).length;
-};
-
-const getWatchlistCount = (films) => {
-  return films.filter((film) => {
-    return !!film.userDetails.watchlist;
-  }).length;
-};
+import {getFavoritesFilmsCount, getWatchedFilmsCount, getWatchlistCount} from '../utils';
 
 export const NAVIGATION = [
   {

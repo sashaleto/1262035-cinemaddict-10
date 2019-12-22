@@ -7,6 +7,8 @@ import {createFilmCardTemplate} from './components/film-card';
 import {createFilmPopupTemplate} from './components/film-popup';
 import {createShowMoreBtnTemplate} from './components/show-more-button';
 
+import {getWatchedFilmsCount} from './utils';
+
 import {generateFilms} from "./moks/films";
 import {NAVIGATION} from "./moks/main-navigation";
 
@@ -17,12 +19,13 @@ const headerElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
 
 const films = generateFilms(FILMS_COUNT);
+const userRating = getWatchedFilmsCount(films);
 
 // Функция для рендеринга компонентов
 const renderComponent = (container, markup, position) => {
   container.insertAdjacentHTML(position, markup);
 };
-renderComponent(headerElement, createUserProfileTemplate(), `beforeend`);
+renderComponent(headerElement, createUserProfileTemplate(userRating), `beforeend`);
 renderComponent(mainElement, createNavigationTemplate(NAVIGATION, films), `beforeend`);
 renderComponent(mainElement, createMainFiltersTemplate(), `beforeend`);
 renderComponent(mainElement, createFilmsBoardTemplate(), `beforeend`);
