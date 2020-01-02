@@ -1,30 +1,13 @@
-import {getRandomNumber, getRandomArrayItem, splitOnSentences, runtimeFormat} from "../utils";
+import {getRandomNumber, getRandomArrayItem, splitOnSentences, runtimeFormat, makeRandomDate} from "../utils";
+import {DOOMY_TEXT, NAMES, COUNTRIES} from '../constants';
 
 const FILMS_TITLES = [`The Shawshank Redemption`, `The Green Mile`, `Forrest Gump`, `Schindler's List`, `Intouchables`, `Inception`, `Léon`, `The Lion King`, `Fight Club`, `La vita è bella`, `Knockin' on Heaven's Door`, `The Godfather`, `Pulp Fiction`, `The Prestige`, `A Beautiful Mind `];
 const POSTERS_PATH = `./images/posters/`;
 const POSTERS_FILES_NAMES = [`made-for-each-other.png`, `popeye-meets-sinbad.png`, `sagebrush-trail.jpg`, `santa-claus-conquers-the-martians.jpg`, `the-dance-of-life.jpg`, `the-great-flamarion.jpg`, `the-man-with-the-golden-arm.jpg`];
-const DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
 
 const GENRES = [`Action`, `Adventure`, `Animation`, `Biography`, `Comedy`, `Crime`, `Drama`, `Family`, `Fantasy`, `Film-Noir`, `History`, `Horror`, `Music`, `Musical`, `Mystery`, `Romance`, `Sci-Fi`, `Sport`, `Thriller`, `War`, `Western`];
-const COUNTRIES = [
-  `United States`,
-  `United Kingdom`,
-  `China`,
-  `France`,
-  `Japan`,
-  `Germany`,
-  `Republic of Korea`,
-  `Australia`,
-  `India`,
-  `New Zealand`,
-  `Canada`,
-  `Hong Kong`,
-  `Italy`,
-  `Spain`,
-  `Russian Federation`,
-];
 
-const SENTENCES = splitOnSentences(DESCRIPTION);
+const SENTENCES = splitOnSentences(DOOMY_TEXT);
 
 const makeFilmDescription = (sentences) => {
   let filmDescription = ``;
@@ -37,30 +20,52 @@ const makeFilmDescription = (sentences) => {
   return filmDescription.trim();
 };
 
-const makeRandomGenres = (genres) => {
-  const genresCount = getRandomNumber(1, 3);
-  return genres.sort(() => 0.5 - Math.random()).slice(0, genresCount);
+const makeShortFilmDescription = (description) => {
+  const symbolsCount = 140;
+  let shortDescription = description;
+
+  if (description.length > symbolsCount) {
+    shortDescription = description.slice(0, symbolsCount) + `...`;
+  }
+
+  return shortDescription;
+};
+
+const makeRandomArray = (array) => {
+  const itemsCount = getRandomNumber(1, 3);
+  return array.sort(() => 0.5 - Math.random()).slice(0, itemsCount);
 };
 
 
 const generateSingleFilm = () => {
+  const releaseDate = makeRandomDate();
+  const year = releaseDate.getFullYear();
+  const filmDescription = makeFilmDescription(SENTENCES);
+
   return {
     title: getRandomArrayItem(FILMS_TITLES),
-    description: makeFilmDescription(SENTENCES),
-    genres: new Set(makeRandomGenres(GENRES)),
+    alternativeTitle: getRandomArrayItem(FILMS_TITLES),
+    description: filmDescription,
+    shortDescription: makeShortFilmDescription(filmDescription),
+    director: getRandomArrayItem(NAMES),
+    writers: new Set(makeRandomArray(NAMES)),
+    actors: new Set(makeRandomArray(NAMES)),
+    genres: new Set(makeRandomArray(GENRES)),
     country: getRandomArrayItem(COUNTRIES),
     runtime: runtimeFormat(getRandomNumber(80, 320)),
     poster: POSTERS_PATH + getRandomArrayItem(POSTERS_FILES_NAMES),
     rating: (getRandomNumber(0, 90) / 10).toFixed(1),
-    year: getRandomNumber(1935, 2019),
+    releaseDate: releaseDate,
+    year: year,
     commentsCount: getRandomNumber(0, 25),
     userDetails: {
       'personalRating': (getRandomNumber(0, 90) / 10).toFixed(1),
       'watchlist': Math.random() > 0.5,
       'alreadyWatched': Math.random() > 0.5,
-      'watchingDate': `2019-05-11T16:12:32.554Z`,
+      'watchingDate': makeRandomDate(),
       'favorite': Math.random() > 0.5,
     },
+    ageRating: getRandomNumber(0, 18),
   };
 };
 

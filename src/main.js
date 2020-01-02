@@ -11,6 +11,7 @@ import {getWatchedFilmsCount} from './utils';
 
 import {generateFilms} from "./moks/films";
 import {NAVIGATION} from "./moks/main-navigation";
+import {generateComments} from "./moks/comment";
 
 const FILMS_COUNT = 5;
 const EXTRA_FILMS_COUNT = 2;
@@ -50,4 +51,6 @@ extraFilmsContainer.forEach((container) => {
 
 const allFilmsList = mainElement.querySelector(`.films-list`);
 renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);
-renderComponent(footerElement, createFilmPopupTemplate(), `afterend`);
+
+const filmComments = generateComments(4);
+renderComponent(footerElement, createFilmPopupTemplate(films[1], filmComments), `afterend`);
