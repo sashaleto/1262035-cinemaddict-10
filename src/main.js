@@ -13,6 +13,8 @@ import {generateFilms} from "./moks/films";
 import {NAVIGATION} from "./moks/main-navigation";
 import {generateComments} from "./moks/comment";
 
+import {sortFilmsBy} from "./utils";
+
 const FILMS_COUNT = 5;
 const EXTRA_FILMS_COUNT = 2;
 const mainElement = document.querySelector(`.main`);
@@ -43,11 +45,20 @@ for (let i = 0; i < FILMS_COUNT; i++) {
 }
 
 const extraFilmsContainer = mainElement.querySelectorAll(`.films-list--extra .films-list__container`);
-extraFilmsContainer.forEach((container) => {
+
+const topRatedFilms = sortFilmsBy(films, `rating`).slice(0, EXTRA_FILMS_COUNT);
+if (topRatedFilms[0].rating > 0) {
   for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
-    renderComponent(container, createFilmCardTemplate(films[1]), `beforeend`);
+    renderComponent(extraFilmsContainer.item(0), createFilmCardTemplate(topRatedFilms[i]), `beforeend`);
   }
-});
+}
+
+const topCommentedFilms = sortFilmsBy(films, `commentsCount`).slice(0, EXTRA_FILMS_COUNT);
+if (topCommentedFilms[0].commentsCount > 0) {
+  for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
+    renderComponent(extraFilmsContainer.item(1), createFilmCardTemplate(topCommentedFilms[i]), `beforeend`);
+  }
+}
 
 const allFilmsList = mainElement.querySelector(`.films-list`);
 renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);

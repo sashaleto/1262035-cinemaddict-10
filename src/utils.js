@@ -15,7 +15,7 @@ export const getRandomArrayItem = (array) => {
 };
 
 export const splitOnSentences = (string) => {
-  const sentences = string.match(/[^\.!\?]+[\.!\?]+/g);
+  const sentences = string.match(/[^.!?]+[.!?]+/g);
   return sentences.map((item) => (item.trim()));
 };
 
@@ -60,4 +60,22 @@ export const makeRandomDate = () => {
   targetDate.setDate(targetDate.getDate() - getRandomNumber(0, 365));
 
   return targetDate;
+};
+
+/**
+ * Сортировка массива фильмов по убыванию
+ * @param {array} films - массив фильмов
+ * @param {string} property - свойство, по которому проводится сортировка
+ * @return {array} - новый отсоритрованный массив
+ */
+export const sortFilmsBy = (films, property) => {
+  return [...films].sort((a, b) => {
+    if (a[property] < b[property]) {
+      return 1;
+    }
+    if (a[property] > b[property]) {
+      return -1;
+    }
+    return 0;
+  });
 };
