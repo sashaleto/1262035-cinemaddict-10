@@ -65,3 +65,5 @@ renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);
 
 const filmComments = generateComments(4);
 renderComponent(footerElement, createFilmPopupTemplate(films[1], filmComments), `afterend`);
+
+footerElement.querySelector(`.footer__statistics`).innerHTML = `<p>${films.length} movies inside</p>`;
