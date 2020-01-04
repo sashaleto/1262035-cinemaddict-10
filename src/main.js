@@ -15,8 +15,11 @@ import {generateComments} from "./moks/comment";
 
 import {sortFilmsBy} from "./utils";
 
-const FILMS_COUNT = 5;
+const FILMS_COUNT = 4;
 const EXTRA_FILMS_COUNT = 2;
+const INITIALLY_SHOWN_FILMS_COUNT = 5;
+const NEXT_SHOWN_FILMS_COUNT = 5;
+
 const mainElement = document.querySelector(`.main`);
 const headerElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
@@ -40,9 +43,8 @@ renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Most 
 
 const allFilmsContainer = mainElement.querySelector(`.films-list .films-list__container`);
 
-for (let i = 0; i < FILMS_COUNT; i++) {
-  renderComponent(allFilmsContainer, createFilmCardTemplate(films[i]), `beforeend`);
-}
+let lastShownFilmNumber = INITIALLY_SHOWN_FILMS_COUNT;
+films.slice(0, lastShownFilmNumber).forEach((film) => renderComponent(allFilmsContainer, createFilmCardTemplate(film), `beforeend`));
 
 const extraFilmsContainer = mainElement.querySelectorAll(`.films-list--extra .films-list__container`);
 
@@ -60,8 +62,22 @@ if (topCommentedFilms[0].commentsCount > 0) {
   }
 }
 
-const allFilmsList = mainElement.querySelector(`.films-list`);
-renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);
+if (films.length >= INITIALLY_SHOWN_FILMS_COUNT) {
+  const allFilmsList = mainElement.querySelector(`.films-list`);
+  renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);
+
+  const showMoreButton = allFilmsList.querySelector(`.films-list__show-more`);
+  showMoreButton.addEventListener(`click`, () => {
+    const increasedFilmNumber = lastShownFilmNumber + NEXT_SHOWN_FILMS_COUNT;
+
+    films.slice(lastShownFilmNumber, increasedFilmNumber).forEach((film) => renderComponent(allFilmsContainer, createFilmCardTemplate(film), `beforeend`));
+    lastShownFilmNumber = increasedFilmNumber;
+
+    if (increasedFilmNumber >= films.length) {
+      showMoreButton.remove();
+    }
+  });
+}
 
 const filmComments = generateComments(4);
 renderComponent(footerElement, createFilmPopupTemplate(films[1], filmComments), `afterend`);
