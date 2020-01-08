@@ -1,25 +1,38 @@
 import {createUserProfileTemplate} from './components/user-profile';
-import {createMainNavigationTemplate} from './components/main-navigation';
+import {createNavigationTemplate} from './components/main-navigation';
 import {createMainFiltersTemplate} from './components/main-filters';
 import {createFilmsBoardTemplate} from './components/board';
 import {createFilmListTemplate} from './components/films-list';
-import {createFilmCArdTemplate} from './components/film-card';
+import {createFilmCardTemplate} from './components/film-card';
 import {createFilmPopupTemplate} from './components/film-popup';
 import {createShowMoreBtnTemplate} from './components/show-more-button';
 
-const FILMS_COUNT = 5;
+import {getWatchedFilmsCount} from './utils';
+
+import {generateFilms} from "./moks/films";
+import {NAVIGATION} from "./moks/main-navigation";
+import {generateComments} from "./moks/comment";
+
+import {sortFilmsBy} from "./utils";
+
+const FILMS_COUNT = 24;
 const EXTRA_FILMS_COUNT = 2;
+const INITIALLY_SHOWN_FILMS_COUNT = 5;
+const NEXT_SHOWN_FILMS_COUNT = 5;
+
 const mainElement = document.querySelector(`.main`);
 const headerElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
+
+const films = generateFilms(FILMS_COUNT);
+const userRating = getWatchedFilmsCount(films);
 
 // Функция для рендеринга компонентов
 const renderComponent = (container, markup, position) => {
   container.insertAdjacentHTML(position, markup);
 };
-
-renderComponent(headerElement, createUserProfileTemplate(), `beforeend`);
-renderComponent(mainElement, createMainNavigationTemplate(), `beforeend`);
+renderComponent(headerElement, createUserProfileTemplate(userRating), `beforeend`);
+renderComponent(mainElement, createNavigationTemplate(NAVIGATION, films), `beforeend`);
 renderComponent(mainElement, createMainFiltersTemplate(), `beforeend`);
 renderComponent(mainElement, createFilmsBoardTemplate(), `beforeend`);
 
@@ -29,17 +42,44 @@ renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Top r
 renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Most commented`, false), `beforeend`);
 
 const allFilmsContainer = mainElement.querySelector(`.films-list .films-list__container`);
-for (let i = 0; i < FILMS_COUNT; i++) {
-  renderComponent(allFilmsContainer, createFilmCArdTemplate(), `beforeend`);
-}
+
+let lastShownFilmNumber = INITIALLY_SHOWN_FILMS_COUNT;
+films.slice(0, lastShownFilmNumber).forEach((film) => renderComponent(allFilmsContainer, createFilmCardTemplate(film), `beforeend`));
 
 const extraFilmsContainer = mainElement.querySelectorAll(`.films-list--extra .films-list__container`);
-extraFilmsContainer.forEach((container) => {
-  for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
-    renderComponent(container, createFilmCArdTemplate(), `beforeend`);
-  }
-});
 
-const allFilmsList = mainElement.querySelector(`.films-list`);
-renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);
-renderComponent(footerElement, createFilmPopupTemplate(), `afterend`);
+const topRatedFilms = sortFilmsBy(films, `rating`).slice(0, EXTRA_FILMS_COUNT);
+if (topRatedFilms[0].rating > 0) {
+  for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
+    renderComponent(extraFilmsContainer.item(0), createFilmCardTemplate(topRatedFilms[i]), `beforeend`);
+  }
+}
+
+const topCommentedFilms = sortFilmsBy(films, `commentsCount`).slice(0, EXTRA_FILMS_COUNT);
+if (topCommentedFilms[0].commentsCount > 0) {
+  for (let i = 0; i < EXTRA_FILMS_COUNT; i++) {
+    renderComponent(extraFilmsContainer.item(1), createFilmCardTemplate(topCommentedFilms[i]), `beforeend`);
+  }
+}
+
+if (films.length >= INITIALLY_SHOWN_FILMS_COUNT) {
+  const allFilmsList = mainElement.querySelector(`.films-list`);
+  renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);
+
+  const showMoreButton = allFilmsList.querySelector(`.films-list__show-more`);
+  showMoreButton.addEventListener(`click`, () => {
+    const increasedFilmNumber = lastShownFilmNumber + NEXT_SHOWN_FILMS_COUNT;
+
+    films.slice(lastShownFilmNumber, increasedFilmNumber).forEach((film) => renderComponent(allFilmsContainer, createFilmCardTemplate(film), `beforeend`));
+    lastShownFilmNumber = increasedFilmNumber;
+
+    if (increasedFilmNumber >= films.length) {
+      showMoreButton.remove();
+    }
+  });
+}
+
+const filmComments = generateComments(4);
+renderComponent(footerElement, createFilmPopupTemplate(films[1], filmComments), `afterend`);
+
+footerElement.querySelector(`.footer__statistics`).innerHTML = `<p>${films.length} movies inside</p>`;
