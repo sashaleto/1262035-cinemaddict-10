@@ -15,7 +15,7 @@ import {generateComments} from "./moks/comment";
 
 import {sortFilmsBy} from "./utils";
 
-const FILMS_COUNT = 4;
+const FILMS_COUNT = 24;
 const EXTRA_FILMS_COUNT = 2;
 const INITIALLY_SHOWN_FILMS_COUNT = 5;
 const NEXT_SHOWN_FILMS_COUNT = 5;

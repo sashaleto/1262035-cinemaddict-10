@@ -40,13 +40,13 @@ const makeRandomArray = (array) => {
 const generateSingleFilm = () => {
   const releaseDate = makeRandomDate();
   const year = releaseDate.getFullYear();
-  const filmDescription = makeFilmDescription(SENTENCES);
+  const description = makeFilmDescription(SENTENCES);
 
   return {
     title: getRandomArrayItem(FILMS_TITLES),
     alternativeTitle: getRandomArrayItem(FILMS_TITLES),
-    description: filmDescription,
-    shortDescription: makeShortFilmDescription(filmDescription),
+    description,
+    shortDescription: makeShortFilmDescription(description),
     director: getRandomArrayItem(NAMES),
     writers: new Set(makeRandomArray(NAMES)),
     actors: new Set(makeRandomArray(NAMES)),
@@ -55,8 +55,8 @@ const generateSingleFilm = () => {
     runtime: runtimeFormat(getRandomNumber(80, 320)),
     poster: POSTERS_PATH + getRandomArrayItem(POSTERS_FILES_NAMES),
     rating: (getRandomNumber(0, 90) / 10).toFixed(1),
-    releaseDate: releaseDate,
-    year: year,
+    releaseDate,
+    year,
     commentsCount: getRandomNumber(0, 25),
     userDetails: {
       'personalRating': (getRandomNumber(0, 90) / 10).toFixed(1),
