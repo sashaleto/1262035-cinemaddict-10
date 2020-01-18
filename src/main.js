@@ -5,7 +5,7 @@ import BoardComponent from './components/board';
 import FilmListComponent from './components/films-list';
 import FilmCardComponent from './components/film-card';
 import {createFilmPopupTemplate} from './components/film-popup';
-import {createShowMoreBtnTemplate} from './components/show-more-button';
+import ShowMoreComponent from './components/show-more-button';
 
 import {getWatchedFilmsCount, render, sortFilmsBy} from './utils';
 import {RenderPosition} from './constants';
@@ -37,11 +37,13 @@ render(mainElement, new MainFiltersComponent().getElement(), RenderPosition.BEFO
 const boardElement = new BoardComponent().getElement();
 render(mainElement, boardElement, RenderPosition.BEFOREEND);
 
-render(boardElement, new FilmListComponent(`films-list`, `All movies. Upcoming`, true).getElement(), RenderPosition.BEFOREEND);
+const allFilmsComponent = new FilmListComponent(`films-list`, `All movies. Upcoming`, true);
+
+render(boardElement, allFilmsComponent.getElement(), RenderPosition.BEFOREEND);
 render(boardElement, new FilmListComponent(`films-list--extra`, `Top rated`, false).getElement(), RenderPosition.BEFOREEND);
 render(boardElement, new FilmListComponent(`films-list--extra`, `Most commented`, false).getElement(), RenderPosition.BEFOREEND);
 
-const allFilmsContainer = mainElement.querySelector(`.films-list .films-list__container`);
+const allFilmsContainer = allFilmsComponent.getElement().querySelector(`.films-list .films-list__container`);
 
 let lastShownFilmNumber = INITIALLY_SHOWN_FILMS_COUNT;
 films.slice(0, lastShownFilmNumber).forEach((film) => render(allFilmsContainer, new FilmCardComponent(film).getElement(), RenderPosition.BEFOREEND));
@@ -63,10 +65,12 @@ if (topCommentedFilms[0].commentsCount > 0) {
 }
 
 if (films.length >= INITIALLY_SHOWN_FILMS_COUNT) {
-  const allFilmsList = mainElement.querySelector(`.films-list`);
-  renderComponent(allFilmsList, createShowMoreBtnTemplate(), `beforeend`);
+  const allFilmsList = allFilmsComponent.getElement();
+  const showMoreComponent = new ShowMoreComponent();
+  const showMoreButton = showMoreComponent.getElement();
 
-  const showMoreButton = allFilmsList.querySelector(`.films-list__show-more`);
+  render(allFilmsList, showMoreButton, RenderPosition.BEFOREEND);
+
   showMoreButton.addEventListener(`click`, () => {
     const increasedFilmNumber = lastShownFilmNumber + NEXT_SHOWN_FILMS_COUNT;
 
@@ -75,6 +79,7 @@ if (films.length >= INITIALLY_SHOWN_FILMS_COUNT) {
 
     if (increasedFilmNumber >= films.length) {
       showMoreButton.remove();
+      showMoreComponent.removeElement();
     }
   });
 }
