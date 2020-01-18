@@ -1,4 +1,4 @@
-import {createUserProfileTemplate} from './components/user-profile';
+import UserProfile from './components/user-profile';
 import {createNavigationTemplate} from './components/main-navigation';
 import {createMainFiltersTemplate} from './components/main-filters';
 import {createFilmsBoardTemplate} from './components/board';
@@ -30,7 +30,7 @@ const userRating = getWatchedFilmsCount(films);
 const renderComponent = (container, markup, position) => {
   container.insertAdjacentHTML(position, markup);
 };
-renderComponent(headerElement, createUserProfileTemplate(userRating), `beforeend`);
+render(headerElement, new UserProfile(userRating).getElement(), RenderPosition.BEFOREEND);
 renderComponent(mainElement, createNavigationTemplate(NAVIGATION, films), `beforeend`);
 renderComponent(mainElement, createMainFiltersTemplate(), `beforeend`);
 renderComponent(mainElement, createFilmsBoardTemplate(), `beforeend`);
