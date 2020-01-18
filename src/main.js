@@ -1,6 +1,6 @@
 import UserProfile from './components/user-profile';
 import NavigationComponent from './components/main-navigation';
-import {createMainFiltersTemplate} from './components/main-filters';
+import MainFiltersComponent from './components/main-filters';
 import {createFilmsBoardTemplate} from './components/board';
 import {createFilmListTemplate} from './components/films-list';
 import FilmCardComponent from './components/film-card';
@@ -32,7 +32,7 @@ const renderComponent = (container, markup, position) => {
 };
 render(headerElement, new UserProfile(userRating).getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new NavigationComponent(NAVIGATION, films).getElement(), RenderPosition.BEFOREEND);
-renderComponent(mainElement, createMainFiltersTemplate(), `beforeend`);
+render(mainElement, new MainFiltersComponent().getElement(), RenderPosition.BEFOREEND);
 renderComponent(mainElement, createFilmsBoardTemplate(), `beforeend`);
 
 const boardElement = mainElement.querySelector(`.films`);
