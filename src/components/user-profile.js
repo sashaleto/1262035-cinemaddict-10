@@ -1,3 +1,5 @@
+import {createElement} from "../utils";
+
 const ratingMapper = (rating) => {
   switch (true) {
     case (rating >= 1 && rating <= 10):
@@ -11,7 +13,7 @@ const ratingMapper = (rating) => {
   }
 };
 
-export const createUserProfileTemplate = (profileRating) => {
+const createUserProfileTemplate = (profileRating) => {
   const userRank = ratingMapper(profileRating);
   return `
     <section class="header__profile profile">
@@ -20,3 +22,26 @@ export const createUserProfileTemplate = (profileRating) => {
     </section>
   `;
 };
+
+export default class UserProfile {
+  constructor(profileRating) {
+    this._element = null;
+    this._profileRating = profileRating;
+  }
+
+  getTemplate() {
+    return createUserProfileTemplate(this._profileRating);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

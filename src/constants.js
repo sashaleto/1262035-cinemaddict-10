@@ -32,3 +32,8 @@ const COUNTRIES = [
 ];
 
 export {DOOMY_TEXT, NAMES, COUNTRIES};
+
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};

@@ -1,3 +1,5 @@
+import {RenderPosition} from './constants';
+
 /**
  * Генерация случайного числа в диапазоне от min до max (включительно)
  * @param {number} min - нижнее значение диапазона
@@ -78,4 +80,22 @@ export const sortFilmsBy = (films, property) => {
     }
     return 0;
   });
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstElementChild;
+};
+
+export const render = (container, element, position) => {
+  switch (position) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
 };
