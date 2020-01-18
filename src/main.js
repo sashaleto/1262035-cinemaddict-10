@@ -4,7 +4,7 @@ import MainFiltersComponent from './components/main-filters';
 import BoardComponent from './components/board';
 import FilmListComponent from './components/films-list';
 import FilmCardComponent from './components/film-card';
-import {createFilmPopupTemplate} from './components/film-popup';
+import FilmPopupComponent from './components/film-popup';
 import ShowMoreComponent from './components/show-more-button';
 
 import {getWatchedFilmsCount, render, sortFilmsBy} from './utils';
@@ -26,10 +26,6 @@ const footerElement = document.querySelector(`.footer`);
 const films = generateFilms(FILMS_COUNT);
 const userRating = getWatchedFilmsCount(films);
 
-// Функция для рендеринга компонентов
-const renderComponent = (container, markup, position) => {
-  container.insertAdjacentHTML(position, markup);
-};
 render(headerElement, new UserProfile(userRating).getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new NavigationComponent(NAVIGATION, films).getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new MainFiltersComponent().getElement(), RenderPosition.BEFOREEND);
@@ -85,6 +81,6 @@ if (films.length >= INITIALLY_SHOWN_FILMS_COUNT) {
 }
 
 const filmComments = generateComments(4);
-renderComponent(footerElement, createFilmPopupTemplate(films[1], filmComments), `afterend`);
+render(footerElement, new FilmPopupComponent(films[1], filmComments).getElement(), RenderPosition.AFTERBEGIN);
 
 footerElement.querySelector(`.footer__statistics`).innerHTML = `<p>${films.length} movies inside</p>`;

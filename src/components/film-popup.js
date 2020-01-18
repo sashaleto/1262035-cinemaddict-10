@@ -1,3 +1,5 @@
+import {createElement} from "../utils";
+
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
     return `<span class="film-details__genre">${genre}</span>`;
@@ -24,7 +26,7 @@ const createCommentsTemplate = (comments) => {
   }).join(``);
 };
 
-export const createFilmPopupTemplate = (film, comments) => {
+const createFilmPopupTemplate = (film, comments) => {
   const writers = Array.from(film.writers).map((name) => name).join(`, `);
   const actors = Array.from(film.actors).map((name) => name).join(`, `);
   const genres = createGenresTemplate(film.genres);
@@ -150,3 +152,27 @@ export const createFilmPopupTemplate = (film, comments) => {
     </section>
   `;
 };
+
+export default class FilmPopupComponent {
+  constructor(film, comments) {
+    this._element = null;
+    this._film = film;
+    this._comments = comments;
+  }
+
+  getTemplate() {
+    return createFilmPopupTemplate(this._film, this._comments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
