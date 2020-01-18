@@ -1,7 +1,7 @@
 import UserProfile from './components/user-profile';
 import NavigationComponent from './components/main-navigation';
 import MainFiltersComponent from './components/main-filters';
-import {createFilmsBoardTemplate} from './components/board';
+import BoardComponent from './components/board';
 import {createFilmListTemplate} from './components/films-list';
 import FilmCardComponent from './components/film-card';
 import {createFilmPopupTemplate} from './components/film-popup';
@@ -33,7 +33,7 @@ const renderComponent = (container, markup, position) => {
 render(headerElement, new UserProfile(userRating).getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new NavigationComponent(NAVIGATION, films).getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new MainFiltersComponent().getElement(), RenderPosition.BEFOREEND);
-renderComponent(mainElement, createFilmsBoardTemplate(), `beforeend`);
+render(mainElement, new BoardComponent().getElement(), RenderPosition.BEFOREEND);
 
 const boardElement = mainElement.querySelector(`.films`);
 renderComponent(boardElement, createFilmListTemplate(`films-list`, `All movies. Upcoming`, true), `beforeend`);
