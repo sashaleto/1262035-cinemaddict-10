@@ -2,7 +2,7 @@ import UserProfile from './components/user-profile';
 import NavigationComponent from './components/main-navigation';
 import MainFiltersComponent from './components/main-filters';
 import BoardComponent from './components/board';
-import {createFilmListTemplate} from './components/films-list';
+import FilmListComponent from './components/films-list';
 import FilmCardComponent from './components/film-card';
 import {createFilmPopupTemplate} from './components/film-popup';
 import {createShowMoreBtnTemplate} from './components/show-more-button';
@@ -33,12 +33,13 @@ const renderComponent = (container, markup, position) => {
 render(headerElement, new UserProfile(userRating).getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new NavigationComponent(NAVIGATION, films).getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new MainFiltersComponent().getElement(), RenderPosition.BEFOREEND);
-render(mainElement, new BoardComponent().getElement(), RenderPosition.BEFOREEND);
 
-const boardElement = mainElement.querySelector(`.films`);
-renderComponent(boardElement, createFilmListTemplate(`films-list`, `All movies. Upcoming`, true), `beforeend`);
-renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Top rated`, false), `beforeend`);
-renderComponent(boardElement, createFilmListTemplate(`films-list--extra`, `Most commented`, false), `beforeend`);
+const boardElement = new BoardComponent().getElement();
+render(mainElement, boardElement, RenderPosition.BEFOREEND);
+
+render(boardElement, new FilmListComponent(`films-list`, `All movies. Upcoming`, true).getElement(), RenderPosition.BEFOREEND);
+render(boardElement, new FilmListComponent(`films-list--extra`, `Top rated`, false).getElement(), RenderPosition.BEFOREEND);
+render(boardElement, new FilmListComponent(`films-list--extra`, `Most commented`, false).getElement(), RenderPosition.BEFOREEND);
 
 const allFilmsContainer = mainElement.querySelector(`.films-list .films-list__container`);
 
