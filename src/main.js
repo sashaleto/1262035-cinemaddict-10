@@ -52,8 +52,6 @@ if (films.length) {
 
     render(container, filmComponent, RenderPosition.BEFOREEND);
 
-    const popupOpenElements = filmComponent.getElement().querySelectorAll(`.film-card__poster, .film-card__comments, .film-card__title`);
-
     const showPopup = () => {
       render(bodyElement, filmPopupComponent, RenderPosition.BEFOREEND);
       const closePopupBtn = filmPopupComponent.getElement().querySelector(`.film-details__close-btn`);
@@ -74,7 +72,7 @@ if (films.length) {
       }
     };
 
-    popupOpenElements.forEach((element) => element.addEventListener(`click`, showPopup));
+    filmComponent.setOpenPopupListeners(showPopup);
   };
 
   const renderExtraFilms = (property, title) => {
