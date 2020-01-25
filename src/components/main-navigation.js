@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract";
 
 const createSingleNavItemTemplate = (navItem, films) => {
   const {title, countFilms, active, additional} = navItem;
@@ -26,26 +26,14 @@ const createNavigationTemplate = (navItems, films) => {
   `;
 };
 
-export default class NavigationComponent {
+export default class NavigationComponent extends AbstractComponent {
   constructor(navItems, films) {
-    this._element = null;
+    super();
     this._navItems = navItems;
     this._films = films;
   }
 
   getTemplate() {
     return createNavigationTemplate(this._navItems, this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

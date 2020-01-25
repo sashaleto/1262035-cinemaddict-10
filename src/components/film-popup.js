@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract";
 
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
@@ -153,9 +153,9 @@ const createFilmPopupTemplate = (film, comments) => {
   `;
 };
 
-export default class FilmPopupComponent {
+export default class FilmPopupComponent extends AbstractComponent {
   constructor(film, comments) {
-    this._element = null;
+    super();
     this._film = film;
     this._comments = comments;
   }
@@ -164,15 +164,7 @@ export default class FilmPopupComponent {
     return createFilmPopupTemplate(this._film, this._comments);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setCloseButtonClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
   }
 }
