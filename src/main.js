@@ -54,8 +54,7 @@ if (films.length) {
 
     const showPopup = () => {
       render(bodyElement, filmPopupComponent, RenderPosition.BEFOREEND);
-      const closePopupBtn = filmPopupComponent.getElement().querySelector(`.film-details__close-btn`);
-      closePopupBtn.addEventListener(`click`, removePopup);
+      filmPopupComponent.setCloseButtonClickHandler(removePopup);
       document.addEventListener(`keydown`, onEscKeyDown);
     };
 
