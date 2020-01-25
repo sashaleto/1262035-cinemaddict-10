@@ -20,4 +20,8 @@ export default class FilmListComponent extends AbstractComponent {
   getTemplate() {
     return createFilmListTemplate(this._class, this._title, this._isTitleHidden);
   }
+
+  getFilmsListContainer() {
+    return this.getElement().querySelector(`.films-list__container`);
+  }
 }
