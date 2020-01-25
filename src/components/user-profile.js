@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract";
 
 const ratingMapper = (rating) => {
   switch (true) {
@@ -23,25 +23,13 @@ const createUserProfileTemplate = (profileRating) => {
   `;
 };
 
-export default class UserProfile {
+export default class UserProfile extends AbstractComponent {
   constructor(profileRating) {
-    this._element = null;
+    super();
     this._profileRating = profileRating;
   }
 
   getTemplate() {
     return createUserProfileTemplate(this._profileRating);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

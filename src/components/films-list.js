@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract";
 
 const createFilmListTemplate = (sectionClass, listTitle, isTitleHidden) => {
   return `
@@ -9,9 +9,9 @@ const createFilmListTemplate = (sectionClass, listTitle, isTitleHidden) => {
   `;
 };
 
-export default class FilmListComponent {
+export default class FilmListComponent extends AbstractComponent {
   constructor(sectionClass, listTitle, isTitleHidden) {
-    this._element = null;
+    super();
     this._class = sectionClass;
     this._title = listTitle;
     this._isTitleHidden = isTitleHidden;
@@ -19,17 +19,5 @@ export default class FilmListComponent {
 
   getTemplate() {
     return createFilmListTemplate(this._class, this._title, this._isTitleHidden);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

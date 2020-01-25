@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from "./abstract";
 
 const createFilmCardTemplate = (film) => {
   const filterActiveClass = `film-card__controls-item--active`;
@@ -27,25 +27,13 @@ const createFilmCardTemplate = (film) => {
   `;
 };
 
-export default class FilmCardComponent {
+export default class FilmCardComponent extends AbstractComponent {
   constructor(film) {
-    this._element = null;
+    super();
     this._film = film;
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
