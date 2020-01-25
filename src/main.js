@@ -103,11 +103,10 @@ if (films.length) {
   if (films.length >= INITIALLY_SHOWN_FILMS_COUNT) {
     const allFilmsList = allFilmsComponent.getElement();
     const showMoreComponent = new ShowMoreComponent();
-    const showMoreButton = showMoreComponent.getElement();
 
     render(allFilmsList, showMoreComponent, RenderPosition.BEFOREEND);
 
-    showMoreButton.addEventListener(`click`, () => {
+    showMoreComponent.setClickHandler(() => {
       const increasedFilmNumber = lastShownFilmNumber + NEXT_SHOWN_FILMS_COUNT;
 
       films.slice(lastShownFilmNumber, increasedFilmNumber).forEach((film) => renderFilm(film, allFilmsContainer));
