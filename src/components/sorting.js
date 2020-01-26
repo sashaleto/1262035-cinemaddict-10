@@ -20,10 +20,19 @@ export default class SortingComponent extends AbstractComponent {
   constructor() {
     super();
     this._currentSortType = SortType.DEFAULT;
+    this._currentSortButton = null;
   }
 
   getTemplate() {
     return createSortingTemplate();
+  }
+
+  getCurrentSortButton() {
+    if (!this._currentSortButton) {
+      this._currentSortButton = this.getElement().querySelector(`.sort__button--active`);
+    }
+
+    return this._currentSortButton;
   }
 
   setSortTypeChangeHandler(handler) {
@@ -40,6 +49,10 @@ export default class SortingComponent extends AbstractComponent {
         return;
       }
 
+      this.getCurrentSortButton().classList.remove(`sort__button--active`);
+      evt.target.classList.add(`sort__button--active`);
+
+      this._currentSortButton = evt.target;
       this._currentSortType = sortType;
 
       handler(this._currentSortType);
