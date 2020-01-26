@@ -45,6 +45,9 @@ const renderFilm = (film, container) => {
 
   filmComponent.setOpenPopupListeners(showPopup);
 };
+const renderFilms = (filmsContainer, films) => {
+  films.forEach((film) => renderFilm(film, filmsContainer));
+};
 
 export default class PageController {
   constructor(container, films) {
@@ -72,7 +75,7 @@ export default class PageController {
       let lastShownFilmNumber = INITIALLY_SHOWN_FILMS_COUNT;
 
       // Отрисовка блока "All Films"
-      films.slice(0, lastShownFilmNumber).forEach((film) => renderFilm(film, allFilmsContainer));
+      renderFilms(allFilmsContainer, films.slice(0, lastShownFilmNumber));
 
       const renderExtraFilms = (extraFilmsComponent, property) => {
         const extraFilms = sortFilmsBy(films, property).slice(0, EXTRA_FILMS_COUNT);
@@ -80,7 +83,7 @@ export default class PageController {
           const extraFilmsContainer = extraFilmsComponent.getFilmsListContainer();
 
           render(this._boardComponent.getElement(), extraFilmsComponent, RenderPosition.BEFOREEND);
-          extraFilms.forEach((film) => renderFilm(film, extraFilmsContainer));
+          renderFilms(extraFilmsContainer, extraFilms);
         }
       };
 
@@ -100,7 +103,7 @@ export default class PageController {
         showMoreComponent.setClickHandler(() => {
           const increasedFilmNumber = lastShownFilmNumber + NEXT_SHOWN_FILMS_COUNT;
 
-          films.slice(lastShownFilmNumber, increasedFilmNumber).forEach((film) => renderFilm(film, allFilmsContainer));
+          renderFilms(allFilmsContainer, films.slice(lastShownFilmNumber, increasedFilmNumber));
           lastShownFilmNumber = increasedFilmNumber;
 
           if (increasedFilmNumber >= films.length) {
