@@ -1,6 +1,6 @@
 import UserProfile from './components/user-profile';
 import NavigationComponent from './components/main-navigation';
-import MainFiltersComponent from './components/main-filters';
+import SortingComponent from './components/sorting';
 import BoardComponent from './components/board';
 import FooterStatistics from "./components/footer-statistics";
 
@@ -24,7 +24,7 @@ const userRating = getWatchedFilmsCount(films);
 
 render(headerElement, new UserProfile(userRating), RenderPosition.BEFOREEND);
 render(mainElement, new NavigationComponent(NAVIGATION, films), RenderPosition.BEFOREEND);
-render(mainElement, new MainFiltersComponent(), RenderPosition.BEFOREEND);
+render(mainElement, new SortingComponent(), RenderPosition.BEFOREEND);
 
 const boardComponent = new BoardComponent();
 render(mainElement, boardComponent, RenderPosition.BEFOREEND);
