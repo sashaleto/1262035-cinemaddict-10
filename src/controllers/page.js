@@ -6,6 +6,10 @@ import {sortFilmsBy} from "../utils";
 import FilmListComponent from "../components/films-list";
 import ShowMoreComponent from "../components/show-more-button";
 import NoFilmsComponent from "../components/no-films";
+import NavigationComponent from "../components/main-navigation";
+import {NAVIGATION} from "../moks/main-navigation";
+import SortingComponent from "../components/sorting";
+import BoardComponent from "../components/board";
 
 const EXTRA_FILMS_COUNT = 2;
 const INITIALLY_SHOWN_FILMS_COUNT = 5;
@@ -43,15 +47,22 @@ const renderFilm = (film, container) => {
 };
 
 export default class PageController {
-  constructor(boardComponent) {
-    this._boardComponent = boardComponent;
+  constructor(container, films) {
+    this._container = container;
     this._noFilmsComponent = new NoFilmsComponent();
+    this._navigationComponent = new NavigationComponent(NAVIGATION, films);
+    this._sortingComponent = new SortingComponent();
+    this._boardComponent = new BoardComponent();
     this._allFilmsComponent = new FilmListComponent(`films-list`, `All movies. Upcoming`, true);
     this._topRatedComponent = new FilmListComponent(`films-list--extra`, `Top rated`, false);
     this._mostCommentedComponent = new FilmListComponent(`films-list--extra`, `Most commented`, false);
   }
 
   render(films) {
+    render(this._container, this._navigationComponent, RenderPosition.BEFOREEND);
+    render(this._container, this._sortingComponent, RenderPosition.BEFOREEND);
+    render(this._container, this._boardComponent, RenderPosition.BEFOREEND);
+
     const allFilmsComponent = this._allFilmsComponent;
 
     render(this._boardComponent.getElement(), allFilmsComponent, RenderPosition.BEFOREEND);
