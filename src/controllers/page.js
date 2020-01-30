@@ -1,6 +1,3 @@
-import FilmCardComponent from "../components/film-card";
-import {generateComments} from "../moks/comment";
-import FilmPopupComponent from "../components/film-popup";
 import {remove, render, RenderPosition} from "../utils/render";
 import {sortFilmsBy} from "../utils";
 import FilmListComponent from "../components/films-list";
@@ -10,43 +7,14 @@ import NavigationComponent from "../components/main-navigation";
 import {NAVIGATION} from "../moks/main-navigation";
 import SortingComponent, {SortType} from "../components/sorting";
 import BoardComponent from "../components/board";
+import MovieController from "./movie";
 
 const EXTRA_FILMS_COUNT = 2;
 const INITIALLY_SHOWN_FILMS_COUNT = 5;
 const NEXT_SHOWN_FILMS_COUNT = 5;
 
-const popupContainer = document.querySelector(`body`);
-
-const renderFilm = (film, container) => {
-  const filmComponent = new FilmCardComponent(film);
-  const filmComments = generateComments(4);
-  const filmPopupComponent = new FilmPopupComponent(film, filmComments);
-
-  render(container, filmComponent, RenderPosition.BEFOREEND);
-
-  const showPopup = () => {
-    render(popupContainer, filmPopupComponent, RenderPosition.BEFOREEND);
-    filmPopupComponent.setCloseButtonClickHandler(removePopup);
-    document.addEventListener(`keydown`, onEscKeyDown);
-  };
-
-  const removePopup = () => {
-    remove(filmPopupComponent);
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  };
-
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      removePopup();
-    }
-  };
-
-  filmComponent.setOpenPopupListeners(showPopup);
-};
 const renderFilms = (filmsContainer, films) => {
-  films.forEach((film) => renderFilm(film, filmsContainer));
+  films.forEach((film) => new MovieController(filmsContainer).render(film));
 };
 
 export default class PageController {
