@@ -1,12 +1,13 @@
 import FilmCardComponent from "../components/film-card";
 import FilmPopupComponent from "../components/film-popup";
 import {generateComments} from "../moks/comment";
-import {remove, render, RenderPosition} from "../utils/render";
+import {remove, render, replace, RenderPosition} from "../utils/render";
 
 export default class MovieController {
-  constructor(container) {
+  constructor(container, onDataChange) {
     this._container = container;
     this._popupContainer = document.querySelector(`body`);
+    this._onDataChange = onDataChange;
 
     this._filmComponent = null;
     this._filmPopupComponent = null;
@@ -36,12 +37,27 @@ export default class MovieController {
   }
 
   render(film) {
-    this._filmComponent = new FilmCardComponent(film);
+    const filmOldComponent = this._filmComponent;
+    const filmOldPopupComponent = this._filmPopupComponent;
+
     const filmComments = generateComments(4);
+    this._filmComponent = new FilmCardComponent(film);
     this._filmPopupComponent = new FilmPopupComponent(film, filmComments);
 
-    render(this._container, this._filmComponent, RenderPosition.BEFOREEND);
-
     this._filmComponent.setOpenPopupListeners(this._showPopup);
+
+    this._filmComponent.setAddToWatchListListener((e) => {
+      e.preventDefault();
+      const newData = Object.assign({}, film);
+      newData.userDetails.watchlist = !film.userDetails.watchlist;
+      this._onDataChange(this, film, newData);
+    });
+
+    if (filmOldComponent && filmOldPopupComponent) {
+      replace(filmOldComponent, this._filmComponent);
+      replace(filmOldPopupComponent, this._filmPopupComponent);
+    } else {
+      render(this._container, this._filmComponent, RenderPosition.BEFOREEND);
+    }
   }
 }
