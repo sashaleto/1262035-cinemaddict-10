@@ -26,11 +26,54 @@ const createCommentsTemplate = (comments) => {
   }).join(``);
 };
 
+const createUserRatingTemplate = (title, poster, rating) => {
+  const ratingScore = Array(9).fill(``).map((item, index) => {
+    const rate = index + 1;
+    return `
+        <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" 
+               value="${rate}" id="rating-${rate}" ${(rating === rate) ? `checked` : ``}>
+        <label class="film-details__user-rating-label" for="rating-${rate}">${rate}</label>
+    `;
+  }).join(``);
+
+  return `
+    <div class="form-details__middle-container">
+      <section class="film-details__user-rating-wrap">
+        <div class="film-details__user-rating-controls">
+          <button class="film-details__watched-reset" type="button">Undo</button>
+        </div>
+
+        <div class="film-details__user-score">
+          <div class="film-details__user-rating-poster">
+            <img src="${poster}" alt="film-poster" class="film-details__user-rating-img">
+          </div>
+
+          <section class="film-details__user-rating-inner">
+            <h3 class="film-details__user-rating-title">${title}</h3>
+
+            <p class="film-details__user-rating-feelings">How you feel it?</p>
+
+            <div class="film-details__user-rating-score">
+                ${ratingScore}
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  `;
+};
+
 const createFilmPopupTemplate = (film, comments) => {
   const writers = Array.from(film.writers).map((name) => name).join(`, `);
   const actors = Array.from(film.actors).map((name) => name).join(`, `);
   const genres = createGenresTemplate(film.genres);
   const allComments = createCommentsTemplate(comments);
+
+  const isInWatchList = film.userDetails.watchlist;
+  const isWatched = film.userDetails.alreadyWatched;
+  const isInFavorites = film.userDetails.favorite;
+
+  const userRating = createUserRatingTemplate(film.title, film.poster, film.userDetails.personalRating);
 
   return `
       <section class="film-details">
@@ -98,17 +141,19 @@ const createFilmPopupTemplate = (film, comments) => {
             </div>
       
             <section class="film-details__controls">
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${isInWatchList ? `checked` : ``}>
               <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
       
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${isWatched ? `checked` : ``}>
               <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
       
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${isInFavorites ? `checked` : ``}>
               <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
             </section>
           </div>
-      
+          
+          ${isWatched ? userRating : ``}
+        
           <div class="form-details__bottom-container">
             <section class="film-details__comments-wrap">
               <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.commentsCount}</span></h3>
