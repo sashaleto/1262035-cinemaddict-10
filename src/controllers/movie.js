@@ -53,6 +53,20 @@ export default class MovieController {
       this._onDataChange(this, film, newData);
     });
 
+    this._filmComponent.setMarkAsWatchedListener((e) => {
+      e.preventDefault();
+      const newData = Object.assign({}, film);
+      newData.userDetails.alreadyWatched = !film.userDetails.alreadyWatched;
+      this._onDataChange(this, film, newData);
+    });
+
+    this._filmComponent.setAddToFavoritesListener((e) => {
+      e.preventDefault();
+      const newData = Object.assign({}, film);
+      newData.userDetails.favorite = !film.userDetails.favorite;
+      this._onDataChange(this, film, newData);
+    });
+
     if (filmOldComponent && filmOldPopupComponent) {
       replace(filmOldComponent, this._filmComponent);
       replace(filmOldPopupComponent, this._filmPopupComponent);

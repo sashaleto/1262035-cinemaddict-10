@@ -4,7 +4,7 @@ const createFilmCardTemplate = (film) => {
   const filterActiveClass = `film-card__controls-item--active`;
   const watchedClass = film.userDetails.alreadyWatched ? filterActiveClass : ``;
   const watchlistClass = film.userDetails.watchlist ? filterActiveClass : ``;
-  const favoriteClass = film.userDetails.watchingDate ? filterActiveClass : ``;
+  const favoriteClass = film.userDetails.favorite ? filterActiveClass : ``;
 
   return `
     <article class="film-card">
