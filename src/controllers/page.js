@@ -29,6 +29,9 @@ export default class PageController {
     this._shownFilmsCount = INITIALLY_SHOWN_FILMS_COUNT;
 
     this._onDataChange = this._onDataChange.bind(this);
+
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._sortingComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
   _renderFilms(filmsContainer, films) {
@@ -67,6 +70,31 @@ export default class PageController {
     }
   }
 
+  _onSortTypeChange(sortType) {
+    let sortedFilms = [];
+
+    switch (sortType) {
+      case SortType.DATE_DOWN:
+        sortedFilms = sortFilmsBy(this._films, `releaseDate`);
+        break;
+      case SortType.RATING_DOWN:
+        sortedFilms = sortFilmsBy(this._films, `rating`);
+        break;
+      case SortType.DEFAULT:
+        sortedFilms = this._films.slice(0, this._shownFilmsCount);
+        break;
+    }
+
+    this._allFilmsComponent.getFilmsListContainer().innerHTML = ``;
+    this._renderFilms(this._allFilmsComponent.getFilmsListContainer(), sortedFilms);
+
+    if (sortType === SortType.DEFAULT) {
+      this._renderShowMoreButton();
+    } else {
+      remove(this._showMoreComponent);
+    }
+  }
+
   render(films) {
     this._films = films;
 
@@ -101,32 +129,6 @@ export default class PageController {
 
       // Добавление/скрытие кнопки "Загрузить еще"
       this._renderShowMoreButton();
-
-      // Добавление обработчика сортировки
-      this._sortingComponent.setSortTypeChangeHandler((sortType) => {
-        let sortedFilms = [];
-
-        switch (sortType) {
-          case SortType.DATE_DOWN:
-            sortedFilms = sortFilmsBy(films, `releaseDate`);
-            break;
-          case SortType.RATING_DOWN:
-            sortedFilms = sortFilmsBy(films, `rating`);
-            break;
-          case SortType.DEFAULT:
-            sortedFilms = films.slice(0, INITIALLY_SHOWN_FILMS_COUNT);
-            break;
-        }
-
-        allFilmsContainer.innerHTML = ``;
-        this._renderFilms(allFilmsContainer, sortedFilms);
-
-        if (sortType === SortType.DEFAULT) {
-          this._renderShowMoreButton();
-        } else {
-          remove(this._showMoreComponent);
-        }
-      });
     } else {
       render(allFilmsComponent.getElement(), this._noFilmsComponent, RenderPosition.BEFOREEND);
     }
