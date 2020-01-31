@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract";
+import AbstractSmartComponent from "./abstract-smart";
 
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
@@ -153,7 +153,7 @@ const createFilmPopupTemplate = (film, comments) => {
   `;
 };
 
-export default class FilmPopupComponent extends AbstractComponent {
+export default class FilmPopupComponent extends AbstractSmartComponent {
   constructor(film, comments) {
     super();
     this._film = film;
@@ -164,19 +164,23 @@ export default class FilmPopupComponent extends AbstractComponent {
     return createFilmPopupTemplate(this._film, this._comments);
   }
 
+  recoveryListeners() {
+
+  }
+
   setCloseButtonClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
   }
 
   setAddToWatchListListener(handler) {
-    this.getElement().querySelectorAll(`.film-details__control-label--watchlist`).addEventListener(`click`, handler);
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, handler);
   }
 
   setMarkAsWatchedListener(handler) {
-    this.getElement().querySelectorAll(`.film-details__control-label--watched`).addEventListener(`click`, handler);
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, handler);
   }
 
   setAddToFavoritesListener(handler) {
-    this.getElement().querySelectorAll(`.film-details__control-label--favorite`).addEventListener(`click`, handler);
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, handler);
   }
 }
