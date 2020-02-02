@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  * Генерация случайного числа в диапазоне от min до max (включительно)
  * @param {number} min - нижнее значение диапазона
@@ -20,10 +22,12 @@ export const splitOnSentences = (string) => {
 };
 
 export const runtimeFormat = (time) => {
-  const hours = Math.floor(time / 60);
-  const minutes = time % 60;
+  const duration = moment.duration(time, `minutes`);
+  return moment.utc(duration.asMilliseconds()).format(`h[h] m[m]`);
+};
 
-  return `${hours}h ${minutes}m`;
+export const releaseDateFormat = (date) => {
+  return moment(date).format(`DD MMMM YYYY`);
 };
 
 export const commentDateFormat = (date) => {
@@ -32,7 +36,6 @@ export const commentDateFormat = (date) => {
   const day = date.getDay();
   const seconds = date.getSeconds();
   const minutes = date.getMinutes();
-
   return `${year}/${month}/${day} ${minutes}:${seconds}`;
 };
 

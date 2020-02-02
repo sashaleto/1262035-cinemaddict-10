@@ -1,4 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart";
+import {runtimeFormat, releaseDateFormat} from "../utils";
 
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
@@ -118,11 +119,11 @@ const createFilmPopupTemplate = (film, comments) => {
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Release Date</td>
-                    <td class="film-details__cell">30 March 1945</td>
+                    <td class="film-details__cell">${releaseDateFormat(film.releaseDate)}</td>
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Runtime</td>
-                    <td class="film-details__cell">${film.runtime}</td>
+                    <td class="film-details__cell">${runtimeFormat(film.runtime)}</td>
                   </tr>
                   <tr class="film-details__row">
                     <td class="film-details__term">Country</td>

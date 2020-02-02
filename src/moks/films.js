@@ -1,4 +1,4 @@
-import {getRandomNumber, getRandomArrayItem, splitOnSentences, runtimeFormat, makeRandomDate} from "../utils";
+import {getRandomNumber, getRandomArrayItem, splitOnSentences, makeRandomDate} from "../utils";
 import {DOOMY_TEXT, NAMES, COUNTRIES} from '../constants';
 
 const FILMS_TITLES = [`The Shawshank Redemption`, `The Green Mile`, `Forrest Gump`, `Schindler's List`, `Intouchables`, `Inception`, `Léon`, `The Lion King`, `Fight Club`, `La vita è bella`, `Knockin' on Heaven's Door`, `The Godfather`, `Pulp Fiction`, `The Prestige`, `A Beautiful Mind `];
@@ -52,7 +52,7 @@ const generateSingleFilm = () => {
     actors: new Set(makeRandomArray(NAMES)),
     genres: new Set(makeRandomArray(GENRES)),
     country: getRandomArrayItem(COUNTRIES),
-    runtime: runtimeFormat(getRandomNumber(80, 320)),
+    runtime: getRandomNumber(80, 320),
     poster: POSTERS_PATH + getRandomArrayItem(POSTERS_FILES_NAMES),
     rating: (getRandomNumber(0, 90) / 10).toFixed(1),
     releaseDate,

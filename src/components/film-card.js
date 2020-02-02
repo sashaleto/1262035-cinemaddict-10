@@ -1,4 +1,5 @@
 import AbstractComponent from "./abstract";
+import {runtimeFormat} from "../utils";
 
 const createFilmCardTemplate = (film) => {
   const filterActiveClass = `film-card__controls-item--active`;
@@ -12,7 +13,7 @@ const createFilmCardTemplate = (film) => {
       <p class="film-card__rating">${film.rating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${film.year}</span>
-        <span class="film-card__duration">${film.runtime}</span>
+        <span class="film-card__duration">${runtimeFormat(film.runtime)}</span>
         <span class="film-card__genre">${Array.from(film.genres)[0]}</span>
       </p>
       <img src="${film.poster}" alt="${film.title}" class="film-card__poster">
