@@ -1,4 +1,4 @@
-import {getRandomNumber, getRandomArrayItem, splitOnSentences, runtimeFormat, makeRandomDate} from "../utils";
+import {getRandomNumber, getRandomArrayItem, splitOnSentences, makeRandomDate} from "../utils";
 import {DOOMY_TEXT, NAMES, COUNTRIES} from '../constants';
 
 const FILMS_TITLES = [`The Shawshank Redemption`, `The Green Mile`, `Forrest Gump`, `Schindler's List`, `Intouchables`, `Inception`, `Léon`, `The Lion King`, `Fight Club`, `La vita è bella`, `Knockin' on Heaven's Door`, `The Godfather`, `Pulp Fiction`, `The Prestige`, `A Beautiful Mind `];
