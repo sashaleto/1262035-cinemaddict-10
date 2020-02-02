@@ -59,7 +59,7 @@ const generateSingleFilm = () => {
     year,
     commentsCount: getRandomNumber(0, 25),
     userDetails: {
-      'personalRating': getRandomNumber(1, 9),
+      'personalRating': Math.random() > 0.5 ? getRandomNumber(1, 9) : null,
       'watchlist': Math.random() > 0.5,
       'alreadyWatched': Math.random() > 0.5,
       'watchingDate': makeRandomDate(),

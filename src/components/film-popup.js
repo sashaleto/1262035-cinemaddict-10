@@ -73,6 +73,8 @@ const createFilmPopupTemplate = (film, comments) => {
   const isWatched = film.userDetails.alreadyWatched;
   const isInFavorites = film.userDetails.favorite;
 
+  const genresTitle = (film.genres.size > 1) ? `Genres` : `Genre`;
+
   const userRating = createUserRatingTemplate(film.title, film.poster, film.userDetails.personalRating);
 
   return `
@@ -127,7 +129,7 @@ const createFilmPopupTemplate = (film, comments) => {
                     <td class="film-details__cell">${film.country}</td>
                   </tr>
                   <tr class="film-details__row">
-                    <td class="film-details__term">Genres</td>
+                    <td class="film-details__term">${genresTitle}</td>
                     <td class="film-details__cell">
                       ${genres}
                     </td>
@@ -199,10 +201,16 @@ const createFilmPopupTemplate = (film, comments) => {
 };
 
 export default class FilmPopupComponent extends AbstractSmartComponent {
-  constructor(film, comments) {
+  constructor(comments) {
     super();
-    this._film = film;
+    this._film = null;
     this._comments = comments;
+    this._closeButtonClickHandler = null;
+    this._addToWatchClickHandler = null;
+    this._markAsWatchedhClickHandler = null;
+    this._addToFavoritesClickHandler = null;
+    this._userRatingHandler = null;
+    this._resetUserRatingHandler = null;
   }
 
   getTemplate() {
@@ -210,22 +218,61 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   }
 
   recoveryListeners() {
+    this.setUserRatingScoreHandler(this._userRatingHandler);
+    this.setResetUserRatingHandler(this._resetUserRatingHandler);
+    this.setCloseButtonClickHandler(this._closeButtonClickHandler);
+    this.setAddToWatchListListener(this._addToWatchClickHandler);
+    this.setMarkAsWatchedListener(this._markAsWatchedhClickHandler);
+    this.setAddToFavoritesListener(this._addToFavoritesClickHandler);
+  }
 
+  setFilm(film) {
+    this._film = film;
+  }
+
+  setUserRatingScoreHandler(handler) {
+    this._userRatingHandler = handler;
+    const userRatingScore = this.getElement().querySelector(`.film-details__user-rating-score`);
+    if (userRatingScore) {
+      userRatingScore.addEventListener(`change`, (e) => {
+        this._userRatingHandler(e, this._film);
+      });
+    }
+  }
+
+  setResetUserRatingHandler(handler) {
+    this._resetUserRatingHandler = handler;
+    const resetUserRating = this.getElement().querySelector(`.film-details__watched-reset`);
+    if (resetUserRating) {
+      resetUserRating.addEventListener(`click`, (e) => {
+        this._resetUserRatingHandler(e, this._film);
+      });
+    }
   }
 
   setCloseButtonClickHandler(handler) {
-    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
+    this._closeButtonClickHandler = handler;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonClickHandler);
   }
 
   setAddToWatchListListener(handler) {
-    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, handler);
+    this._addToWatchClickHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, (e) => {
+      this._addToWatchClickHandler(e, this._film);
+    });
   }
 
   setMarkAsWatchedListener(handler) {
-    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, handler);
+    this._markAsWatchedhClickHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, (e) => {
+      this._markAsWatchedhClickHandler(e, this._film);
+    });
   }
 
   setAddToFavoritesListener(handler) {
-    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, handler);
+    this._addToFavoritesClickHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, (e) => {
+      this._addToFavoritesClickHandler(e, this._film);
+    });
   }
 }
