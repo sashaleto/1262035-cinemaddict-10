@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract";
+import AbstractSmartComponent from "./abstract-smart";
 
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
@@ -26,11 +26,56 @@ const createCommentsTemplate = (comments) => {
   }).join(``);
 };
 
+const createUserRatingTemplate = (title, poster, rating) => {
+  const ratingScore = Array(9).fill(``).map((item, index) => {
+    const rate = index + 1;
+    return `
+        <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" 
+               value="${rate}" id="rating-${rate}" ${(rating === rate) ? `checked` : ``}>
+        <label class="film-details__user-rating-label" for="rating-${rate}">${rate}</label>
+    `;
+  }).join(``);
+
+  return `
+    <div class="form-details__middle-container">
+      <section class="film-details__user-rating-wrap">
+        <div class="film-details__user-rating-controls">
+          <button class="film-details__watched-reset" type="button">Undo</button>
+        </div>
+
+        <div class="film-details__user-score">
+          <div class="film-details__user-rating-poster">
+            <img src="${poster}" alt="film-poster" class="film-details__user-rating-img">
+          </div>
+
+          <section class="film-details__user-rating-inner">
+            <h3 class="film-details__user-rating-title">${title}</h3>
+
+            <p class="film-details__user-rating-feelings">How you feel it?</p>
+
+            <div class="film-details__user-rating-score">
+                ${ratingScore}
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  `;
+};
+
 const createFilmPopupTemplate = (film, comments) => {
   const writers = Array.from(film.writers).map((name) => name).join(`, `);
   const actors = Array.from(film.actors).map((name) => name).join(`, `);
   const genres = createGenresTemplate(film.genres);
   const allComments = createCommentsTemplate(comments);
+
+  const isInWatchList = film.userDetails.watchlist;
+  const isWatched = film.userDetails.alreadyWatched;
+  const isInFavorites = film.userDetails.favorite;
+
+  const genresTitle = (film.genres.size > 1) ? `Genres` : `Genre`;
+
+  const userRating = createUserRatingTemplate(film.title, film.poster, film.userDetails.personalRating);
 
   return `
       <section class="film-details">
@@ -84,7 +129,7 @@ const createFilmPopupTemplate = (film, comments) => {
                     <td class="film-details__cell">${film.country}</td>
                   </tr>
                   <tr class="film-details__row">
-                    <td class="film-details__term">Genres</td>
+                    <td class="film-details__term">${genresTitle}</td>
                     <td class="film-details__cell">
                       ${genres}
                     </td>
@@ -98,17 +143,19 @@ const createFilmPopupTemplate = (film, comments) => {
             </div>
       
             <section class="film-details__controls">
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${isInWatchList ? `checked` : ``}>
               <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
       
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${isWatched ? `checked` : ``}>
               <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
       
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${isInFavorites ? `checked` : ``}>
               <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
             </section>
           </div>
-      
+          
+          ${isWatched ? userRating : ``}
+        
           <div class="form-details__bottom-container">
             <section class="film-details__comments-wrap">
               <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.commentsCount}</span></h3>
@@ -153,18 +200,79 @@ const createFilmPopupTemplate = (film, comments) => {
   `;
 };
 
-export default class FilmPopupComponent extends AbstractComponent {
-  constructor(film, comments) {
+export default class FilmPopupComponent extends AbstractSmartComponent {
+  constructor(comments) {
     super();
-    this._film = film;
+    this._film = null;
     this._comments = comments;
+    this._closeButtonClickHandler = null;
+    this._addToWatchClickHandler = null;
+    this._markAsWatchedhClickHandler = null;
+    this._addToFavoritesClickHandler = null;
+    this._userRatingHandler = null;
+    this._resetUserRatingHandler = null;
   }
 
   getTemplate() {
     return createFilmPopupTemplate(this._film, this._comments);
   }
 
+  recoveryListeners() {
+    this.setUserRatingScoreHandler(this._userRatingHandler);
+    this.setResetUserRatingHandler(this._resetUserRatingHandler);
+    this.setCloseButtonClickHandler(this._closeButtonClickHandler);
+    this.setAddToWatchListListener(this._addToWatchClickHandler);
+    this.setMarkAsWatchedListener(this._markAsWatchedhClickHandler);
+    this.setAddToFavoritesListener(this._addToFavoritesClickHandler);
+  }
+
+  setFilm(film) {
+    this._film = film;
+  }
+
+  setUserRatingScoreHandler(handler) {
+    this._userRatingHandler = handler;
+    const userRatingScore = this.getElement().querySelector(`.film-details__user-rating-score`);
+    if (userRatingScore) {
+      userRatingScore.addEventListener(`change`, (e) => {
+        this._userRatingHandler(e, this._film);
+      });
+    }
+  }
+
+  setResetUserRatingHandler(handler) {
+    this._resetUserRatingHandler = handler;
+    const resetUserRating = this.getElement().querySelector(`.film-details__watched-reset`);
+    if (resetUserRating) {
+      resetUserRating.addEventListener(`click`, (e) => {
+        this._resetUserRatingHandler(e, this._film);
+      });
+    }
+  }
+
   setCloseButtonClickHandler(handler) {
-    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
+    this._closeButtonClickHandler = handler;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._closeButtonClickHandler);
+  }
+
+  setAddToWatchListListener(handler) {
+    this._addToWatchClickHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, (e) => {
+      this._addToWatchClickHandler(e, this._film);
+    });
+  }
+
+  setMarkAsWatchedListener(handler) {
+    this._markAsWatchedhClickHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, (e) => {
+      this._markAsWatchedhClickHandler(e, this._film);
+    });
+  }
+
+  setAddToFavoritesListener(handler) {
+    this._addToFavoritesClickHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, (e) => {
+      this._addToFavoritesClickHandler(e, this._film);
+    });
   }
 }

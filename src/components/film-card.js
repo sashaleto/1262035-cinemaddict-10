@@ -4,7 +4,7 @@ const createFilmCardTemplate = (film) => {
   const filterActiveClass = `film-card__controls-item--active`;
   const watchedClass = film.userDetails.alreadyWatched ? filterActiveClass : ``;
   const watchlistClass = film.userDetails.watchlist ? filterActiveClass : ``;
-  const favoriteClass = film.userDetails.watchingDate ? filterActiveClass : ``;
+  const favoriteClass = film.userDetails.favorite ? filterActiveClass : ``;
 
   return `
     <article class="film-card">
@@ -40,5 +40,23 @@ export default class FilmCardComponent extends AbstractComponent {
   setOpenPopupListeners(handler) {
     this.getElement().querySelectorAll(`.film-card__poster, .film-card__comments, .film-card__title`)
       .forEach((element) => element.addEventListener(`click`, handler));
+  }
+
+  setAddToWatchListListener(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--add-to-watchlist`).addEventListener(`click`, (e) => {
+      handler(e, this._film);
+    });
+  }
+
+  setMarkAsWatchedListener(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--mark-as-watched`).addEventListener(`click`, (e) => {
+      handler(e, this._film);
+    });
+  }
+
+  setAddToFavoritesListener(handler) {
+    this.getElement().querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, (e) => {
+      handler(e, this._film);
+    });
   }
 }
