@@ -52,7 +52,7 @@ const generateSingleFilm = () => {
     actors: new Set(makeRandomArray(NAMES)),
     genres: new Set(makeRandomArray(GENRES)),
     country: getRandomArrayItem(COUNTRIES),
-    runtime: runtimeFormat(getRandomNumber(80, 320)),
+    runtime: getRandomNumber(80, 320),
     poster: POSTERS_PATH + getRandomArrayItem(POSTERS_FILES_NAMES),
     rating: (getRandomNumber(0, 90) / 10).toFixed(1),
     releaseDate,
