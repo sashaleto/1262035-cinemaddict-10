@@ -36,24 +36,32 @@ export default class NavigationComponent extends AbstractComponent {
   constructor(navItems) {
     super();
     this._navItems = navItems;
-    this._currentNavItem = this.getElement().querySelector(`.main-navigation__item--active`);
+    this._currentNavItem = this._getCurrentNavItem();
   }
 
   getTemplate() {
     return createNavigationTemplate(this._navItems);
   }
 
+  _getCurrentNavItem() {
+    if (!this._currentNavItem) {
+      this._currentNavItem = this.getElement().querySelector(`.main-navigation__item--active`);
+    }
+
+    return this._currentNavItem;
+  }
+
   setFilterChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
-      if (this._currentNavItem === evt.target) {
+      if (this._getCurrentNavItem() === evt.target) {
         return;
       }
 
       const filterName = getFilterNameByHash(evt.target.hash);
 
-      this._currentNavItem.classList.remove(`main-navigation__item--active`);
+      this._getCurrentNavItem().classList.remove(`main-navigation__item--active`);
       evt.target.classList.add(`main-navigation__item--active`);
       this._currentNavItem = evt.target;
 
