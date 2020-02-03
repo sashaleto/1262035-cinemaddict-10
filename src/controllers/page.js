@@ -24,7 +24,8 @@ export default class PageController {
     this._mostCommentedComponent = new FilmListComponent(`films-list--extra`, `Most commented`, false);
     this._showMoreComponent = new ShowMoreComponent();
 
-    this._shownFilmsCount = INITIALLY_SHOWN_FILMS_COUNT;
+    this._shownFilmsCount = 0;
+    this._sortType = SortType.DEFAULT;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
@@ -36,13 +37,51 @@ export default class PageController {
     this._sortingComponent.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
-  _renderFilms(filmsContainer, films) {
+  _renderCommonFilms(maxCount) {
+    let sortedFilms = [];
+    const films = this._filmsModel.getFilms();
+
+    switch (this._sortType) {
+      case SortType.DATE_DOWN:
+        sortedFilms = sortFilmsBy(films, `releaseDate`);
+        break;
+      case SortType.RATING_DOWN:
+        sortedFilms = sortFilmsBy(films, `rating`);
+        break;
+      case SortType.DEFAULT:
+        sortedFilms = films;
+        break;
+    }
+
+    const sortedAndCut = sortedFilms.slice(this._shownFilmsCount, maxCount);
+
+    this._renderFilms(sortedAndCut, this._allFilmsComponent.getFilmsListContainer());
+    this._shownFilmsCount = this._shownFilmsCount + sortedAndCut.length;
+  }
+
+  _renderTopBlocks(allFilms) {
+    this._renderExtraFilms(allFilms, this._topRatedComponent, `rating`);
+    this._renderExtraFilms(allFilms, this._mostCommentedComponent, `commentsCount`);
+  }
+
+  _renderExtraFilms(allFilms, extraFilmsComponent, property) {
+    const extraFilms = sortFilmsBy(allFilms, property).slice(0, EXTRA_FILMS_COUNT);
+    if (extraFilms[0][property] > 0) {
+      const extraFilmsContainer = extraFilmsComponent.getFilmsListContainer();
+
+      render(this._boardComponent.getElement(), extraFilmsComponent, RenderPosition.BEFOREEND);
+      this._renderFilms(extraFilms, extraFilmsContainer);
+    }
+  }
+
+  _renderFilms(films, filmsContainer = this._allFilmsComponent.getFilmsListContainer()) {
     // для управления всеми созданными контроллерами фильмов
-    return films.map((film) => {
+    const newControllers = films.map((film) => {
       const controller = new MovieController(filmsContainer, this._onDataChange, this._onViewChange);
       controller.render(film);
       return controller;
     });
+    this._activeFilmControllers = this._activeFilmControllers.concat(newControllers);
   }
 
   _onDataChange(movieController, oldFilm, newFilm) {
@@ -57,7 +96,7 @@ export default class PageController {
 
   _renderShowMoreButton() {
     const films = this._filmsModel.getFilms();
-    if (films.length >= this._shownFilmsCount) {
+    if (films.length > this._shownFilmsCount) {
       const allFilmsList = this._allFilmsComponent.getElement();
       const showMoreComponent = this._showMoreComponent;
 
@@ -66,55 +105,36 @@ export default class PageController {
       showMoreComponent.setClickHandler(() => {
         const increasedFilmNumber = this._shownFilmsCount + NEXT_SHOWN_FILMS_COUNT;
 
-        const newControllers = this._renderFilms(this._allFilmsComponent.getFilmsListContainer(), films.slice(this._shownFilmsCount, increasedFilmNumber));
-        this._activeFilmControllers = this._activeFilmControllers.concat(newControllers);
-
-        this._shownFilmsCount = increasedFilmNumber;
+        this._renderCommonFilms(increasedFilmNumber);
 
         if (increasedFilmNumber >= films.length) {
           remove(showMoreComponent);
         }
       });
-    }
-  }
-
-  _onSortTypeChange(sortType) {
-    let sortedFilms = [];
-    const films = this._filmsModel.getFilms();
-
-    switch (sortType) {
-      case SortType.DATE_DOWN:
-        sortedFilms = sortFilmsBy(films, `releaseDate`);
-        break;
-      case SortType.RATING_DOWN:
-        sortedFilms = sortFilmsBy(films, `rating`);
-        break;
-      case SortType.DEFAULT:
-        sortedFilms = films.slice(0, this._shownFilmsCount);
-        break;
-    }
-
-    this._allFilmsComponent.getFilmsListContainer().innerHTML = ``;
-    const newControllers = this._renderFilms(this._allFilmsComponent.getFilmsListContainer(), sortedFilms);
-    this._activeFilmControllers = this._activeFilmControllers.concat(newControllers);
-
-    if (sortType === SortType.DEFAULT) {
-      this._renderShowMoreButton();
     } else {
       remove(this._showMoreComponent);
     }
   }
 
+  _onSortTypeChange(sortType) {
+    this._sortType = sortType;
+    this._removeFilms();
+    this._renderCommonFilms(INITIALLY_SHOWN_FILMS_COUNT);
+    this._renderTopBlocks(this._filmsModel.getAllFilms());
+    this._renderShowMoreButton();
+  }
+
   _onFilterChange() {
     this._removeFilms();
-    const newControllers = this._renderFilms(this._allFilmsComponent.getFilmsListContainer(), this._filmsModel.getFilms().slice(0, INITIALLY_SHOWN_FILMS_COUNT));
-    this._activeFilmControllers = this._activeFilmControllers.concat(newControllers);
+    this._renderCommonFilms(INITIALLY_SHOWN_FILMS_COUNT);
+    this._renderTopBlocks(this._filmsModel.getAllFilms());
     this._renderShowMoreButton();
   }
 
   _removeFilms() {
     this._activeFilmControllers.forEach((movieController) => movieController.destroy());
     this._activeFilmControllers = [];
+    this._shownFilmsCount = 0;
   }
 
   render() {
@@ -126,28 +146,11 @@ export default class PageController {
     const allFilmsComponent = this._allFilmsComponent;
 
     render(this._boardComponent.getElement(), allFilmsComponent, RenderPosition.BEFOREEND);
-    const allFilmsContainer = allFilmsComponent.getFilmsListContainer();
 
     if (films.length) {
       // Отрисовка блока "All Films"
-      this._activeFilmControllers = this._renderFilms(allFilmsContainer, films.slice(0, this._shownFilmsCount));
-
-      const renderExtraFilms = (extraFilmsComponent, property) => {
-        const extraFilms = sortFilmsBy(films, property).slice(0, EXTRA_FILMS_COUNT);
-        if (extraFilms[0][property] > 0) {
-          const extraFilmsContainer = extraFilmsComponent.getFilmsListContainer();
-
-          render(this._boardComponent.getElement(), extraFilmsComponent, RenderPosition.BEFOREEND);
-          const newExtraFilmsControllers = this._renderFilms(extraFilmsContainer, extraFilms);
-          this._activeFilmControllers = this._activeFilmControllers.concat(newExtraFilmsControllers);
-        }
-      };
-
-      // Отрисовка блока "Top Rated Films"
-      renderExtraFilms(this._topRatedComponent, `rating`);
-
-      // Отрисовка блока "Top Commented Films"
-      renderExtraFilms(this._mostCommentedComponent, `commentsCount`);
+      this._renderCommonFilms(INITIALLY_SHOWN_FILMS_COUNT);
+      this._renderTopBlocks(films);
 
       // Добавление/скрытие кнопки "Загрузить еще"
       this._renderShowMoreButton();
