@@ -41,8 +41,10 @@ const generateSingleFilm = () => {
   const releaseDate = makeRandomDate();
   const year = releaseDate.getFullYear();
   const description = makeFilmDescription(SENTENCES);
+  const now = new Date().toDateString();
 
   return {
+    id: String(Date.parse(now)) + String(Math.random()),
     title: getRandomArrayItem(FILMS_TITLES),
     alternativeTitle: getRandomArrayItem(FILMS_TITLES),
     description,
