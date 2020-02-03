@@ -7,7 +7,7 @@ export default class FilterController {
   constructor(container, filmsModel) {
     this._container = container;
     this._filmsModel = filmsModel;
-    this._activeFilterType = FilterType.ALL;
+    this._activeFilterType = `all`;
 
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
@@ -17,11 +17,12 @@ export default class FilterController {
 
   render() {
     const allFilms = this._filmsModel.getAllFilms();
-    const filters = Object.values(FilterType).map((filterType) => {
+    const filters = Object.keys(FilterType).map((filterKey) => {
+      const filterType = FilterType[filterKey];
       return {
         title: filterType,
         count: (filterType !== FilterType.ALL) ? getFilmsByFilter(allFilms, filterType).length : null,
-        active: filterType === this._activeFilterType,
+        active: filterKey.toLowerCase() === this._activeFilterType,
         additional: filterType === FilterType.STATS,
       };
     });

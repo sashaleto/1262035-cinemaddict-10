@@ -55,7 +55,7 @@ export default class NavigationComponent extends AbstractComponent {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
-      if (this._getCurrentNavItem() === evt.target) {
+      if (this._getCurrentNavItem() === evt.target || !evt.target.hash) {
         return;
       }
 
