@@ -17,9 +17,9 @@ export default class FilterController {
     const filters = Object.values(FilterType).map((filterType) => {
       return {
         title: filterType,
-        count: getFilmsByFilter(allFilms, filterType).length,
+        count: (filterType !== FilterType.ALL) ? getFilmsByFilter(allFilms, filterType).length : null,
         active: filterType === this._activeFilterType,
-        additional: filterType === (FilterType.STATS),
+        additional: filterType === FilterType.STATS,
       };
     });
 
