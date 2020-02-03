@@ -1,6 +1,5 @@
 import FilmCardComponent from "../components/film-card";
 import FilmPopupComponent from "../components/film-popup";
-import {generateComments} from "../moks/comment";
 import {remove, render, replace, RenderPosition} from "../utils/render";
 
 const Mode = {
@@ -49,8 +48,10 @@ export default class MovieController {
   _buildHandler(filmMutator) {
     return (e, changingFilm) => {
       const newUserDetails = Object.assign({}, changingFilm.userDetails);
+      const newComments = [...changingFilm.comments];
       const newFilm = Object.assign({}, changingFilm);
       newFilm.userDetails = newUserDetails;
+      newFilm.comments = newComments;
       filmMutator(e, newFilm);
       this._onDataChange(this, changingFilm, newFilm);
     };
@@ -65,7 +66,6 @@ export default class MovieController {
   render(film) {
     const previousFilmComponent = this._filmComponent;
 
-    const filmComments = generateComments(4);
     this._filmComponent = new FilmCardComponent(film);
 
     const addToWatchListHandler = this._buildHandler((e, newFilm) => {
@@ -93,7 +93,7 @@ export default class MovieController {
 
     const showPopup = () => {
       this._onViewChange();
-      this._filmPopupComponent = new FilmPopupComponent(filmComments);
+      this._filmPopupComponent = new FilmPopupComponent();
       this._mode = Mode.POPUP;
       this._filmPopupComponent.setFilm(film);
 
@@ -114,6 +114,16 @@ export default class MovieController {
         newFilm.userDetails.alreadyWatched = false;
       });
       this._filmPopupComponent.setResetUserRatingHandler(resetUserRatingHandler);
+
+      const deleteCommentHandler = this._buildHandler((e, newFilm) => {
+        const commentId = e.target.dataset.commentId;
+        const index = newFilm.comments.findIndex((it) => it.id === commentId);
+        if (index === -1) {
+          return;
+        }
+        newFilm.comments = [].concat(newFilm.comments.slice(0, index), newFilm.comments.slice(index + 1));
+      });
+      this._filmPopupComponent.setDeleteCommentListener(deleteCommentHandler);
 
       document.addEventListener(`keydown`, this._onEscKeyDown);
     };
