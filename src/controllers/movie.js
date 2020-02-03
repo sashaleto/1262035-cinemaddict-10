@@ -56,6 +56,12 @@ export default class MovieController {
     };
   }
 
+  destroy() {
+    // remove(this._filmPopupComponent);
+    remove(this._filmComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
   render(film) {
     const previousFilmComponent = this._filmComponent;
 

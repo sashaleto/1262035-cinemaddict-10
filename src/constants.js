@@ -34,9 +34,9 @@ const COUNTRIES = [
 export {DOOMY_TEXT, NAMES, COUNTRIES};
 
 export const FilterType = {
-  ALL: `All movies`,
-  WATCHLIST: `Watchlist`,
-  HISTORY: `History`,
-  FAVORITES: `Favorites`,
-  STATS: `Stats`,
+  ALL: `all movies`,
+  WATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVORITES: `favorites`,
+  STATS: `stats`,
 };
