@@ -74,7 +74,15 @@ export default class MovieController {
     this._filmComponent.setAddToWatchListListener(addToWatchListHandler);
 
     const markAsWatchedHandler = this._buildHandler((e, newFilm) => {
-      newFilm.userDetails.alreadyWatched = !newFilm.userDetails.alreadyWatched;
+      const wasWatched = newFilm.userDetails.alreadyWatched;
+      newFilm.userDetails.alreadyWatched = !wasWatched;
+
+      if (wasWatched && !newFilm.userDetails.alreadyWatched) {
+        newFilm.userDetails.watchingDate = null;
+        newFilm.userDetails.personalRating = null;
+      } else if (!wasWatched && newFilm.userDetails.alreadyWatched) {
+        newFilm.userDetails.watchingDate = new Date();
+      }
     });
     this._filmComponent.setMarkAsWatchedListener(markAsWatchedHandler);
 
