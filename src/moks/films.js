@@ -64,7 +64,7 @@ const generateSingleFilm = () => {
       'personalRating': Math.random() > 0.5 ? getRandomNumber(1, 9) : null,
       'watchlist': Math.random() > 0.5,
       'alreadyWatched': Math.random() > 0.5,
-      'watchingDate': makeRandomDate(),
+      'watchingDate': Math.random() > 0.5 ? makeRandomDate() : null,
       'favorite': Math.random() > 0.5,
     },
     ageRating: getRandomNumber(0, 18),

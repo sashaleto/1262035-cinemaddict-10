@@ -1,10 +1,9 @@
 import AbstractComponent from "./abstract";
 
-const createSingleNavItemTemplate = (navItem, films) => {
-  const {title, countFilms, active, additional} = navItem;
+const createSingleNavItemTemplate = (navItem) => {
+  const {title, count, active, additional} = navItem;
   const activeClass = active ? `main-navigation__item--active` : ``;
   const additionalClass = additional ? ` main-navigation__item--additional` : ``;
-  const count = countFilms(films);
 
   return `
     <a href="#${title.toLowerCase().split(` `)[0]}" class="main-navigation__item ${activeClass} ${additionalClass}">
@@ -14,9 +13,9 @@ const createSingleNavItemTemplate = (navItem, films) => {
   `;
 };
 
-const createNavigationTemplate = (navItems, films) => {
+const createNavigationTemplate = (navItems) => {
   const navigationTemplate = navItems.map((item) => {
-    return createSingleNavItemTemplate(item, films);
+    return createSingleNavItemTemplate(item);
   }).join(``);
 
   return `
@@ -27,13 +26,12 @@ const createNavigationTemplate = (navItems, films) => {
 };
 
 export default class NavigationComponent extends AbstractComponent {
-  constructor(navItems, films) {
+  constructor(navItems) {
     super();
     this._navItems = navItems;
-    this._films = films;
   }
 
   getTemplate() {
-    return createNavigationTemplate(this._navItems, this._films);
+    return createNavigationTemplate(this._navItems);
   }
 }
