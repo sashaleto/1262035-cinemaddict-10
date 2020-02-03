@@ -1,6 +1,7 @@
 import UserProfile from './components/user-profile';
 import FooterStatistics from "./components/footer-statistics";
 import PageController from "./controllers/page";
+import Movies from "./models/movies";
 
 import {getWatchedFilmsCount} from './utils';
 import {RenderPosition, render} from './utils/render';
@@ -15,11 +16,14 @@ const footerElement = document.querySelector(`.footer`);
 footerElement.querySelector(`.footer__statistics`).remove();
 
 const films = generateFilms(FILMS_COUNT);
+const filmsModel = new Movies();
+filmsModel.setFilms(films);
+
 const userRating = getWatchedFilmsCount(films);
 
 render(headerElement, new UserProfile(userRating), RenderPosition.BEFOREEND);
 
-const page = new PageController(mainElement, films);
-page.render(films);
+const page = new PageController(mainElement, filmsModel);
+page.render();
 
 render(footerElement, new FooterStatistics(films), RenderPosition.BEFOREEND);
