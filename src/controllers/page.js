@@ -3,8 +3,6 @@ import {sortFilmsBy} from "../utils";
 import FilmListComponent from "../components/films-list";
 import ShowMoreComponent from "../components/show-more-button";
 import NoFilmsComponent from "../components/no-films";
-import NavigationComponent from "../components/main-navigation";
-import {NAVIGATION} from "../moks/main-navigation";
 import SortingComponent, {SortType} from "../components/sorting";
 import BoardComponent from "../components/board";
 import MovieController from "./movie";
@@ -19,7 +17,6 @@ export default class PageController {
     this._activeFilmControllers = [];
     this._container = container;
     this._noFilmsComponent = new NoFilmsComponent();
-    this._navigationComponent = new NavigationComponent(NAVIGATION, this._filmsModel.getFilms());
     this._sortingComponent = new SortingComponent();
     this._boardComponent = new BoardComponent();
     this._allFilmsComponent = new FilmListComponent(`films-list`, `All movies. Upcoming`, true);
@@ -108,7 +105,6 @@ export default class PageController {
   render() {
     const films = this._filmsModel.getFilms();
 
-    render(this._container, this._navigationComponent, RenderPosition.BEFOREEND);
     render(this._container, this._sortingComponent, RenderPosition.BEFOREEND);
     render(this._container, this._boardComponent, RenderPosition.BEFOREEND);
 

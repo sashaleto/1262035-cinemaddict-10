@@ -1,6 +1,7 @@
 import UserProfile from './components/user-profile';
 import FooterStatistics from "./components/footer-statistics";
 import PageController from "./controllers/page";
+import FilterController from "./controllers/filter";
 import Movies from "./models/movies";
 
 import {getWatchedFilmsCount} from './utils';
@@ -22,6 +23,9 @@ filmsModel.setFilms(films);
 const userRating = getWatchedFilmsCount(films);
 
 render(headerElement, new UserProfile(userRating), RenderPosition.BEFOREEND);
+
+const filters = new FilterController(mainElement, filmsModel);
+filters.render();
 
 const page = new PageController(mainElement, filmsModel);
 page.render();
