@@ -26,6 +26,7 @@ export default class PageController {
 
     this._shownFilmsCount = 0;
     this._sortType = SortType.DEFAULT;
+    this._maxAllowedFilms = INITIALLY_SHOWN_FILMS_COUNT;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
@@ -35,9 +36,12 @@ export default class PageController {
 
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._sortingComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+
+    this._onModelChange = this._onModelChange.bind(this);
+    this._filmsModel.setDataChangeHandler(this._onModelChange);
   }
 
-  _renderCommonFilms(maxCount) {
+  _renderCommonFilms() {
     let sortedFilms = [];
     const films = this._filmsModel.getFilms();
 
@@ -53,10 +57,11 @@ export default class PageController {
         break;
     }
 
-    const sortedAndCut = sortedFilms.slice(this._shownFilmsCount, maxCount);
+    // const sortedAndCut = sortedFilms.slice(this._shownFilmsCount, maxCount);
+    sortedFilms = sortedFilms.slice(0, this._maxAllowedFilms);
 
-    this._renderFilms(sortedAndCut, this._allFilmsComponent.getFilmsListContainer());
-    this._shownFilmsCount = this._shownFilmsCount + sortedAndCut.length;
+    this._renderFilms(sortedFilms, this._allFilmsComponent.getFilmsListContainer());
+    this._shownFilmsCount = sortedFilms.length;
   }
 
   _renderTopBlocks(allFilms) {
@@ -90,6 +95,10 @@ export default class PageController {
     movieController.render(newFilm);
   }
 
+  _onModelChange() {
+    this._renderPage();
+  }
+
   _onViewChange() {
     this._activeFilmControllers.forEach((controller) => controller.setDefaultView());
   }
@@ -103,32 +112,28 @@ export default class PageController {
       render(allFilmsList, showMoreComponent, RenderPosition.BEFOREEND);
 
       showMoreComponent.setClickHandler(() => {
-        const increasedFilmNumber = this._shownFilmsCount + NEXT_SHOWN_FILMS_COUNT;
-
-        this._renderCommonFilms(increasedFilmNumber);
-
-        if (increasedFilmNumber >= films.length) {
-          remove(showMoreComponent);
-        }
+        this._maxAllowedFilms += NEXT_SHOWN_FILMS_COUNT;
+        this._renderPage();
       });
-    } else {
-      remove(this._showMoreComponent);
     }
+  }
+
+  _renderPage() {
+    this._removeFilms();
+    remove(this._showMoreComponent);
+    this._renderCommonFilms();
+    this._renderTopBlocks(this._filmsModel.getAllFilms());
+    this._renderShowMoreButton();
   }
 
   _onSortTypeChange(sortType) {
     this._sortType = sortType;
-    this._removeFilms();
-    this._renderCommonFilms(INITIALLY_SHOWN_FILMS_COUNT);
-    this._renderTopBlocks(this._filmsModel.getAllFilms());
-    this._renderShowMoreButton();
+    this._renderPage();
   }
 
   _onFilterChange() {
-    this._removeFilms();
-    this._renderCommonFilms(INITIALLY_SHOWN_FILMS_COUNT);
-    this._renderTopBlocks(this._filmsModel.getAllFilms());
-    this._renderShowMoreButton();
+    this._maxAllowedFilms = INITIALLY_SHOWN_FILMS_COUNT;
+    this._renderPage();
   }
 
   _removeFilms() {
@@ -148,12 +153,7 @@ export default class PageController {
     render(this._boardComponent.getElement(), allFilmsComponent, RenderPosition.BEFOREEND);
 
     if (films.length) {
-      // Отрисовка блока "All Films"
-      this._renderCommonFilms(INITIALLY_SHOWN_FILMS_COUNT);
-      this._renderTopBlocks(films);
-
-      // Добавление/скрытие кнопки "Загрузить еще"
-      this._renderShowMoreButton();
+      this._renderPage();
     } else {
       render(allFilmsComponent.getElement(), this._noFilmsComponent, RenderPosition.BEFOREEND);
     }
