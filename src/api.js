@@ -54,6 +54,22 @@ const API = class {
       .then((response) => response.json())
       .then(Comment.parseComments);
   }
+
+  postComment(comment, filmId) {
+    return this._load({
+      url: `comments/${filmId}`,
+      method: Method.POST,
+      body: JSON.stringify(Comment.toLocalComment(comment)),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        return {
+          movie: FilmModel.parseFilm(response.movie),
+          comments: Comment.parseComments(response.comments),
+        };
+      });
+  }
 };
 
 export default API;

@@ -84,7 +84,7 @@ export default class PageController {
   _renderFilms(films, filmsContainer = this._allFilmsComponent.getFilmsListContainer()) {
     // для управления всеми созданными контроллерами фильмов
     const newControllers = films.map((film) => {
-      const controller = new MovieController(filmsContainer, this._onDataChange, this._onViewChange, this._api);
+      const controller = new MovieController(filmsContainer, this._onDataChange, this._onViewChange, this._api, this._filmsModel);
       controller.render(film);
       return controller;
     });

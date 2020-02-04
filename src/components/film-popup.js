@@ -1,7 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart";
 import he from 'he';
 import {runtimeFormat, releaseDateFormat, commentDateFormat} from "../utils";
-import {EMOTIONS} from "../constants";
 
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
@@ -16,7 +15,7 @@ const createCommentsTemplate = (comments) => {
     return `
     <li class="film-details__comment">
       <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${EMOTIONS[comment.emotion]}.png" width="55" height="55" alt="emoji">
+        <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
       </span>
       <div>
         <p class="film-details__comment-text">${comment.text}</p>
@@ -68,8 +67,7 @@ const createUserRatingTemplate = (title, poster, rating) => {
   `;
 };
 
-const createFilmPopupTemplate = (film) => {
-  const comments = film.comments;
+const createFilmPopupTemplate = (film, comments) => {
   const writers = Array.from(film.writers).map((name) => name).join(`, `);
   const actors = Array.from(film.actors).map((name) => name).join(`, `);
   const genres = createGenresTemplate(film.genres);
@@ -164,7 +162,7 @@ const createFilmPopupTemplate = (film) => {
         
           <div class="form-details__bottom-container">
             <section class="film-details__comments-wrap">
-              <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.comments.length}</span></h3>
+              <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
       
               <ul class="film-details__comments-list">
                 ${allComments}
@@ -210,6 +208,7 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   constructor() {
     super();
     this._film = null;
+    this._comments = null;
     this._closeButtonClickHandler = null;
     this._addToWatchClickHandler = null;
     this._markAsWatchedhClickHandler = null;
@@ -220,7 +219,7 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createFilmPopupTemplate(this._film);
+    return createFilmPopupTemplate(this._film, this._comments);
   }
 
   recoveryListeners() {
@@ -235,6 +234,10 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
 
   setFilm(film) {
     this._film = film;
+  }
+
+  setComments(comments) {
+    this._comments = comments;
   }
 
   getNewCommentData() {
