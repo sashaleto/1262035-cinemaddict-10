@@ -7,8 +7,10 @@ const SENTENCES = splitOnSentences(DOOMY_TEXT);
 
 const generateSingleComment = () => {
   const commentDate = makeRandomDate();
+  const now = new Date().toDateString();
 
   return {
+    id: String(Date.parse(now)) + String(Math.random()),
     author: getRandomArrayItem(NAMES),
     text: getRandomArrayItem(SENTENCES),
     date: commentDateFormat(commentDate),

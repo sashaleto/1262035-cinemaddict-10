@@ -1,22 +1,28 @@
 import AbstractComponent from "./abstract";
 
-const createSingleNavItemTemplate = (navItem, films) => {
-  const {title, countFilms, active, additional} = navItem;
+const FILTER_HREF_PREFIX = `#`;
+
+const getFilterNameByHash = (hash) => {
+  return hash.substring(FILTER_HREF_PREFIX.length);
+};
+
+const createSingleNavItemTemplate = (navItem) => {
+  const {title, count, active, additional} = navItem;
   const activeClass = active ? `main-navigation__item--active` : ``;
   const additionalClass = additional ? ` main-navigation__item--additional` : ``;
-  const count = countFilms(films);
+  const formattedTitle = title.charAt(0).toUpperCase() + title.substring(1);
 
   return `
     <a href="#${title.toLowerCase().split(` `)[0]}" class="main-navigation__item ${activeClass} ${additionalClass}">
-        ${title}
+        ${formattedTitle}
         ${count ? ` <span class="main-navigation__item-count">${count}</span>` : ``}
     </a>
   `;
 };
 
-const createNavigationTemplate = (navItems, films) => {
+const createNavigationTemplate = (navItems) => {
   const navigationTemplate = navItems.map((item) => {
-    return createSingleNavItemTemplate(item, films);
+    return createSingleNavItemTemplate(item);
   }).join(``);
 
   return `
@@ -27,13 +33,39 @@ const createNavigationTemplate = (navItems, films) => {
 };
 
 export default class NavigationComponent extends AbstractComponent {
-  constructor(navItems, films) {
+  constructor(navItems) {
     super();
     this._navItems = navItems;
-    this._films = films;
+    this._currentNavItem = this._getCurrentNavItem();
   }
 
   getTemplate() {
-    return createNavigationTemplate(this._navItems, this._films);
+    return createNavigationTemplate(this._navItems);
+  }
+
+  _getCurrentNavItem() {
+    if (!this._currentNavItem) {
+      this._currentNavItem = this.getElement().querySelector(`.main-navigation__item--active`);
+    }
+
+    return this._currentNavItem;
+  }
+
+  setFilterChangeHandler(handler) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+
+      if (this._getCurrentNavItem() === evt.target || !evt.target.hash) {
+        return;
+      }
+
+      const filterName = getFilterNameByHash(evt.target.hash);
+
+      this._getCurrentNavItem().classList.remove(`main-navigation__item--active`);
+      evt.target.classList.add(`main-navigation__item--active`);
+      this._currentNavItem = evt.target;
+
+      handler(filterName);
+    });
   }
 }

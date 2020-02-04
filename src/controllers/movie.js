@@ -1,7 +1,7 @@
 import FilmCardComponent from "../components/film-card";
 import FilmPopupComponent from "../components/film-popup";
-import {generateComments} from "../moks/comment";
 import {remove, render, replace, RenderPosition} from "../utils/render";
+import {commentDateFormat} from "../utils";
 
 const Mode = {
   DEFAULT: `default`,
@@ -19,10 +19,13 @@ export default class MovieController {
     this._filmPopupComponent = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._onCtrlEnterKeysDown = this._onCtrlEnterKeysDown.bind(this);
     this._removePopup = this._removePopup.bind(this);
     this._buildHandler = this._buildHandler.bind(this);
 
     this._mode = Mode.DEFAULT;
+
+    this._film = null;
   }
 
   _onEscKeyDown(evt) {
@@ -33,11 +36,38 @@ export default class MovieController {
     }
   }
 
+  _onCtrlEnterKeysDown(evt) {
+    const isComboKeys = (evt.ctrlKey || evt.metaKey) && evt.key === `Enter`;
+
+    if (isComboKeys) {
+      this._submitComment(evt);
+    }
+  }
+
+  _submitComment(evt) {
+    const now = new Date().toDateString();
+    const data = this._filmPopupComponent.getNewCommentData();
+
+    if (data.emotion && data.text) {
+      const newData = Object.assign(data, {
+        id: String(Date.parse(now)) + String(Math.random()),
+        author: `qwerty`,
+        date: commentDateFormat(new Date()),
+      });
+      this._buildHandler((e, newFilm) => {
+        newFilm.comments.push(newData);
+      })(evt, this._film);
+    } else {
+      throw new Error(`Fill in comment and pick one of emoji`);
+    }
+  }
+
   _removePopup() {
     remove(this._filmPopupComponent);
     this._filmPopupComponent = null;
     this._mode = Mode.DEFAULT;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+    document.removeEventListener(`keydown`, this._onCtrlEnterKeysDown);
   }
 
   setDefaultView() {
@@ -49,17 +79,23 @@ export default class MovieController {
   _buildHandler(filmMutator) {
     return (e, changingFilm) => {
       const newUserDetails = Object.assign({}, changingFilm.userDetails);
+      const newComments = [...changingFilm.comments];
       const newFilm = Object.assign({}, changingFilm);
       newFilm.userDetails = newUserDetails;
+      newFilm.comments = newComments;
       filmMutator(e, newFilm);
       this._onDataChange(this, changingFilm, newFilm);
     };
   }
 
+  destroy() {
+    remove(this._filmComponent);
+  }
+
   render(film) {
+    this._film = film;
     const previousFilmComponent = this._filmComponent;
 
-    const filmComments = generateComments(4);
     this._filmComponent = new FilmCardComponent(film);
 
     const addToWatchListHandler = this._buildHandler((e, newFilm) => {
@@ -68,7 +104,15 @@ export default class MovieController {
     this._filmComponent.setAddToWatchListListener(addToWatchListHandler);
 
     const markAsWatchedHandler = this._buildHandler((e, newFilm) => {
-      newFilm.userDetails.alreadyWatched = !newFilm.userDetails.alreadyWatched;
+      const wasWatched = newFilm.userDetails.alreadyWatched;
+      newFilm.userDetails.alreadyWatched = !wasWatched;
+
+      if (wasWatched && !newFilm.userDetails.alreadyWatched) {
+        newFilm.userDetails.watchingDate = null;
+        newFilm.userDetails.personalRating = null;
+      } else if (!wasWatched && newFilm.userDetails.alreadyWatched) {
+        newFilm.userDetails.watchingDate = new Date();
+      }
     });
     this._filmComponent.setMarkAsWatchedListener(markAsWatchedHandler);
 
@@ -79,7 +123,7 @@ export default class MovieController {
 
     const showPopup = () => {
       this._onViewChange();
-      this._filmPopupComponent = new FilmPopupComponent(filmComments);
+      this._filmPopupComponent = new FilmPopupComponent();
       this._mode = Mode.POPUP;
       this._filmPopupComponent.setFilm(film);
 
@@ -101,7 +145,18 @@ export default class MovieController {
       });
       this._filmPopupComponent.setResetUserRatingHandler(resetUserRatingHandler);
 
+      const deleteCommentHandler = this._buildHandler((e, newFilm) => {
+        const commentId = e.target.dataset.commentId;
+        const index = newFilm.comments.findIndex((it) => it.id === commentId);
+        if (index === -1) {
+          return;
+        }
+        newFilm.comments = [].concat(newFilm.comments.slice(0, index), newFilm.comments.slice(index + 1));
+      });
+      this._filmPopupComponent.setDeleteCommentListener(deleteCommentHandler);
+
       document.addEventListener(`keydown`, this._onEscKeyDown);
+      document.addEventListener(`keydown`, this._onCtrlEnterKeysDown);
     };
     this._filmComponent.setOpenPopupListeners(showPopup);
 

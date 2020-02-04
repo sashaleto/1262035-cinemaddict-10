@@ -1,4 +1,5 @@
 import {getRandomNumber, getRandomArrayItem, splitOnSentences, makeRandomDate} from "../utils";
+import {generateComments} from "./comment";
 import {DOOMY_TEXT, NAMES, COUNTRIES} from '../constants';
 
 const FILMS_TITLES = [`The Shawshank Redemption`, `The Green Mile`, `Forrest Gump`, `Schindler's List`, `Intouchables`, `Inception`, `Léon`, `The Lion King`, `Fight Club`, `La vita è bella`, `Knockin' on Heaven's Door`, `The Godfather`, `Pulp Fiction`, `The Prestige`, `A Beautiful Mind `];
@@ -41,8 +42,13 @@ const generateSingleFilm = () => {
   const releaseDate = makeRandomDate();
   const year = releaseDate.getFullYear();
   const description = makeFilmDescription(SENTENCES);
+  const now = new Date().toDateString();
+
+  const comments = generateComments(getRandomNumber(0, 8));
 
   return {
+    id: String(Date.parse(now)) + String(Math.random()),
+    comments,
     title: getRandomArrayItem(FILMS_TITLES),
     alternativeTitle: getRandomArrayItem(FILMS_TITLES),
     description,
@@ -57,12 +63,12 @@ const generateSingleFilm = () => {
     rating: (getRandomNumber(0, 90) / 10).toFixed(1),
     releaseDate,
     year,
-    commentsCount: getRandomNumber(0, 25),
+    commentsCount: comments.length,
     userDetails: {
       'personalRating': Math.random() > 0.5 ? getRandomNumber(1, 9) : null,
       'watchlist': Math.random() > 0.5,
       'alreadyWatched': Math.random() > 0.5,
-      'watchingDate': makeRandomDate(),
+      'watchingDate': Math.random() > 0.5 ? makeRandomDate() : null,
       'favorite': Math.random() > 0.5,
     },
     ageRating: getRandomNumber(0, 18),
