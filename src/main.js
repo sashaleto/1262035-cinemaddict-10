@@ -28,7 +28,7 @@ api.getFilms()
     const filters = new FilterController(mainElement, filmsModel);
     filters.render();
 
-    const page = new PageController(mainElement, filmsModel);
+    const page = new PageController(mainElement, filmsModel, api);
     page.render();
 
     render(footerElement, new FooterStatistics(films), RenderPosition.BEFOREEND);

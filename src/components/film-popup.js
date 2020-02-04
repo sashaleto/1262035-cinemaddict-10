@@ -274,6 +274,7 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   setAddToWatchListListener(handler) {
     this._addToWatchClickHandler = handler;
     this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, (e) => {
+      e.preventDefault();
       this._addToWatchClickHandler(e, this._film);
     });
   }
@@ -281,6 +282,7 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   setMarkAsWatchedListener(handler) {
     this._markAsWatchedhClickHandler = handler;
     this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, (e) => {
+      e.preventDefault();
       this._markAsWatchedhClickHandler(e, this._film);
     });
   }
@@ -288,6 +290,7 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   setAddToFavoritesListener(handler) {
     this._addToFavoritesClickHandler = handler;
     this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, (e) => {
+      e.preventDefault();
       this._addToFavoritesClickHandler(e, this._film);
     });
   }
