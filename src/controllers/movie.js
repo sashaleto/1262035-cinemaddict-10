@@ -1,3 +1,4 @@
+import FilmModel from "../models/film";
 import FilmCardComponent from "../components/film-card";
 import FilmPopupComponent from "../components/film-popup";
 import {remove, render, replace, RenderPosition} from "../utils/render";
@@ -9,11 +10,12 @@ const Mode = {
 };
 
 export default class MovieController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, api) {
     this._container = container;
     this._popupContainer = document.querySelector(`body`);
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._api = api;
 
     this._filmComponent = null;
     this._filmPopupComponent = null;
@@ -66,6 +68,7 @@ export default class MovieController {
     remove(this._filmPopupComponent);
     this._filmPopupComponent = null;
     this._mode = Mode.DEFAULT;
+    this._film.comments = null;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onCtrlEnterKeysDown);
   }
@@ -78,11 +81,7 @@ export default class MovieController {
 
   _buildHandler(filmMutator) {
     return (e, changingFilm) => {
-      const newUserDetails = Object.assign({}, changingFilm.userDetails);
-      const newComments = [...changingFilm.comments];
-      const newFilm = Object.assign({}, changingFilm);
-      newFilm.userDetails = newUserDetails;
-      newFilm.comments = newComments;
+      const newFilm = FilmModel.clone(changingFilm);
       filmMutator(e, newFilm);
       this._onDataChange(this, changingFilm, newFilm);
     };
@@ -107,10 +106,7 @@ export default class MovieController {
       const wasWatched = newFilm.userDetails.alreadyWatched;
       newFilm.userDetails.alreadyWatched = !wasWatched;
 
-      if (wasWatched && !newFilm.userDetails.alreadyWatched) {
-        newFilm.userDetails.watchingDate = null;
-        newFilm.userDetails.personalRating = null;
-      } else if (!wasWatched && newFilm.userDetails.alreadyWatched) {
+      if (!wasWatched && newFilm.userDetails.alreadyWatched) {
         newFilm.userDetails.watchingDate = new Date();
       }
     });
@@ -140,7 +136,7 @@ export default class MovieController {
       this._filmPopupComponent.setUserRatingScoreHandler(userRatingScoreHandler);
 
       const resetUserRatingHandler = this._buildHandler((e, newFilm) => {
-        newFilm.userDetails.personalRating = null;
+        newFilm.userDetails.personalRating = 0;
         newFilm.userDetails.alreadyWatched = false;
       });
       this._filmPopupComponent.setResetUserRatingHandler(resetUserRatingHandler);
@@ -158,7 +154,12 @@ export default class MovieController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
       document.addEventListener(`keydown`, this._onCtrlEnterKeysDown);
     };
-    this._filmComponent.setOpenPopupListeners(showPopup);
+    this._filmComponent.setOpenPopupListeners(() => {
+      this._api.getComments(film.id).then((comments) => {
+        film.comments = comments;
+        showPopup();
+      });
+    });
 
     if (previousFilmComponent) {
       replace(previousFilmComponent, this._filmComponent);

@@ -40,3 +40,10 @@ export const FilterType = {
   FAVORITES: `favorites`,
   STATS: `stats`,
 };
+
+export const EMOTIONS = {
+  SMILE: `smile`,
+  SLEEPING: `sleeping`,
+  PUKE: `puke`,
+  ANGRY: `angry`,
+};

@@ -1,6 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart";
 import he from 'he';
-import {runtimeFormat, releaseDateFormat} from "../utils";
+import {runtimeFormat, releaseDateFormat, commentDateFormat} from "../utils";
+import {EMOTIONS} from "../constants";
 
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
@@ -10,16 +11,18 @@ const createGenresTemplate = (genres) => {
 
 const createCommentsTemplate = (comments) => {
   return comments.map((comment) => {
+    const date = commentDateFormat(comment.date);
+
     return `
     <li class="film-details__comment">
       <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
+        <img src="./images/emoji/${EMOTIONS[comment.emotion]}.png" width="55" height="55" alt="emoji">
       </span>
       <div>
         <p class="film-details__comment-text">${comment.text}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${comment.author}</span>
-          <span class="film-details__comment-day">${comment.date}</span>
+          <span class="film-details__comment-day">${date}</span>
           <button class="film-details__comment-delete" data-comment-id="${comment.id}">Delete</button>
         </p>
       </div>
@@ -271,6 +274,7 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   setAddToWatchListListener(handler) {
     this._addToWatchClickHandler = handler;
     this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, (e) => {
+      e.preventDefault();
       this._addToWatchClickHandler(e, this._film);
     });
   }
@@ -278,6 +282,7 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   setMarkAsWatchedListener(handler) {
     this._markAsWatchedhClickHandler = handler;
     this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, (e) => {
+      e.preventDefault();
       this._markAsWatchedhClickHandler(e, this._film);
     });
   }
@@ -285,6 +290,7 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
   setAddToFavoritesListener(handler) {
     this._addToFavoritesClickHandler = handler;
     this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, (e) => {
+      e.preventDefault();
       this._addToFavoritesClickHandler(e, this._film);
     });
   }

@@ -12,10 +12,12 @@ const INITIALLY_SHOWN_FILMS_COUNT = 5;
 const NEXT_SHOWN_FILMS_COUNT = 5;
 
 export default class PageController {
-  constructor(container, filmsModel) {
+  constructor(container, filmsModel, api) {
     this._filmsModel = filmsModel;
     this._activeFilmControllers = [];
     this._container = container;
+
+    this._api = api;
     this._noFilmsComponent = new NoFilmsComponent();
     this._sortingComponent = new SortingComponent();
     this._boardComponent = new BoardComponent();
@@ -82,7 +84,7 @@ export default class PageController {
   _renderFilms(films, filmsContainer = this._allFilmsComponent.getFilmsListContainer()) {
     // для управления всеми созданными контроллерами фильмов
     const newControllers = films.map((film) => {
-      const controller = new MovieController(filmsContainer, this._onDataChange, this._onViewChange);
+      const controller = new MovieController(filmsContainer, this._onDataChange, this._onViewChange, this._api);
       controller.render(film);
       return controller;
     });
@@ -90,9 +92,13 @@ export default class PageController {
   }
 
   _onDataChange(movieController, oldFilm, newFilm) {
-    this._filmsModel.updateFilm(oldFilm.id, newFilm);
-
-    movieController.render(newFilm);
+    this._api.updateFilm(oldFilm.id, newFilm)
+      .then((filmModel) => {
+        const isSuccess = this._filmsModel.updateFilm(oldFilm.id, filmModel);
+        if (isSuccess) {
+          movieController.render(filmModel);
+        }
+      });
   }
 
   _onModelChange() {

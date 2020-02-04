@@ -3,31 +3,34 @@ import FooterStatistics from "./components/footer-statistics";
 import PageController from "./controllers/page";
 import FilterController from "./controllers/filter";
 import Movies from "./models/movies";
-
+import API from "./api";
 import {getWatchedFilmsCount} from './utils';
 import {RenderPosition, render} from './utils/render';
+import {END_POINT, AUTHORIZATION} from "./connection";
 
-import {generateFilms} from "./moks/films";
-
-const FILMS_COUNT = 23;
+const api = new API(END_POINT, AUTHORIZATION);
 
 const mainElement = document.querySelector(`.main`);
 const headerElement = document.querySelector(`.header`);
 const footerElement = document.querySelector(`.footer`);
 footerElement.querySelector(`.footer__statistics`).remove();
 
-const films = generateFilms(FILMS_COUNT);
-const filmsModel = new Movies();
-filmsModel.setFilms(films);
 
-const userRating = getWatchedFilmsCount(films);
+api.getFilms()
+  .then((films) => {
+    const filmsModel = new Movies();
+    filmsModel.setFilms(films);
 
-render(headerElement, new UserProfile(userRating), RenderPosition.BEFOREEND);
+    const userRating = getWatchedFilmsCount(films);
 
-const filters = new FilterController(mainElement, filmsModel);
-filters.render();
+    render(headerElement, new UserProfile(userRating), RenderPosition.BEFOREEND);
 
-const page = new PageController(mainElement, filmsModel);
-page.render();
+    const filters = new FilterController(mainElement, filmsModel);
+    filters.render();
 
-render(footerElement, new FooterStatistics(films), RenderPosition.BEFOREEND);
+    const page = new PageController(mainElement, filmsModel, api);
+    page.render();
+
+    render(footerElement, new FooterStatistics(films), RenderPosition.BEFOREEND);
+  });
+
