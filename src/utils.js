@@ -31,12 +31,7 @@ export const releaseDateFormat = (date) => {
 };
 
 export const commentDateFormat = (date) => {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDay();
-  const seconds = date.getSeconds();
-  const minutes = date.getMinutes();
-  return `${year}/${month}/${day} ${minutes}:${seconds}`;
+  return moment(date).format(`YYYY/MM/DD HH:MM`);
 };
 
 export const getWatchedFilmsCount = (films) => {

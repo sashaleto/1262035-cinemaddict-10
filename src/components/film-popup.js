@@ -1,4 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart";
+import he from 'he';
 import {runtimeFormat, releaseDateFormat} from "../utils";
 
 const createGenresTemplate = (genres) => {
@@ -174,22 +175,22 @@ const createFilmPopupTemplate = (film) => {
                 </label>
       
                 <div class="film-details__emoji-list">
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="sleeping">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
                   <label class="film-details__emoji-label" for="emoji-smile">
                     <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
                   </label>
       
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="neutral-face">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
                   <label class="film-details__emoji-label" for="emoji-sleeping">
                     <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
                   </label>
       
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-gpuke" value="grinning">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-gpuke" value="puke">
                   <label class="film-details__emoji-label" for="emoji-gpuke">
                     <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
                   </label>
       
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="grinning">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
                   <label class="film-details__emoji-label" for="emoji-angry">
                     <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
                   </label>
@@ -231,6 +232,15 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
 
   setFilm(film) {
     this._film = film;
+  }
+
+  getNewCommentData() {
+    const checkedEmotion = this.getElement().querySelector(`[name="comment-emoji"]:checked`);
+    const text = this.getElement().querySelector(`.film-details__comment-input`).value;
+    return {
+      emotion: checkedEmotion ? checkedEmotion.value : ``,
+      text: he.encode(text),
+    };
   }
 
   setUserRatingScoreHandler(handler) {

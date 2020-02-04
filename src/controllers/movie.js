@@ -1,6 +1,7 @@
 import FilmCardComponent from "../components/film-card";
 import FilmPopupComponent from "../components/film-popup";
 import {remove, render, replace, RenderPosition} from "../utils/render";
+import {commentDateFormat} from "../utils";
 
 const Mode = {
   DEFAULT: `default`,
@@ -18,10 +19,13 @@ export default class MovieController {
     this._filmPopupComponent = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._onCtrlEnterKeysDown = this._onCtrlEnterKeysDown.bind(this);
     this._removePopup = this._removePopup.bind(this);
     this._buildHandler = this._buildHandler.bind(this);
 
     this._mode = Mode.DEFAULT;
+
+    this._film = null;
   }
 
   _onEscKeyDown(evt) {
@@ -32,11 +36,38 @@ export default class MovieController {
     }
   }
 
+  _onCtrlEnterKeysDown(evt) {
+    const isComboKeys = (evt.ctrlKey || evt.metaKey) && evt.key === `Enter`;
+
+    if (isComboKeys) {
+      this._submitComment(evt);
+    }
+  }
+
+  _submitComment(evt) {
+    const now = new Date().toDateString();
+    const data = this._filmPopupComponent.getNewCommentData();
+
+    if (data.emotion && data.text) {
+      const newData = Object.assign(data, {
+        id: String(Date.parse(now)) + String(Math.random()),
+        author: `qwerty`,
+        date: commentDateFormat(new Date()),
+      });
+      this._buildHandler((e, newFilm) => {
+        newFilm.comments.push(newData);
+      })(evt, this._film);
+    } else {
+      throw new Error(`Fill in comment and pick one of emoji`);
+    }
+  }
+
   _removePopup() {
     remove(this._filmPopupComponent);
     this._filmPopupComponent = null;
     this._mode = Mode.DEFAULT;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+    document.removeEventListener(`keydown`, this._onCtrlEnterKeysDown);
   }
 
   setDefaultView() {
@@ -58,12 +89,11 @@ export default class MovieController {
   }
 
   destroy() {
-    // remove(this._filmPopupComponent);
     remove(this._filmComponent);
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   render(film) {
+    this._film = film;
     const previousFilmComponent = this._filmComponent;
 
     this._filmComponent = new FilmCardComponent(film);
@@ -126,6 +156,7 @@ export default class MovieController {
       this._filmPopupComponent.setDeleteCommentListener(deleteCommentHandler);
 
       document.addEventListener(`keydown`, this._onEscKeyDown);
+      document.addEventListener(`keydown`, this._onCtrlEnterKeysDown);
     };
     this._filmComponent.setOpenPopupListeners(showPopup);
 
