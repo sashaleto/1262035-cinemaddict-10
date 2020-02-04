@@ -6,9 +6,7 @@ import Movies from "./models/movies";
 import API from "./api";
 import {getWatchedFilmsCount} from './utils';
 import {RenderPosition, render} from './utils/render';
-
-const AUTHORIZATION = `Basic kTy9gIdsz2317rD`;
-const END_POINT = `https://htmlacademy-es-10.appspot.com/cinemaddict`;
+import {END_POINT, AUTHORIZATION} from "./connection";
 
 const api = new API(END_POINT, AUTHORIZATION);
 

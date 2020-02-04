@@ -1,7 +1,7 @@
 export default class FilmModel {
   constructor(data) {
     this.id = data[`id`];
-    this.comments = data[`comments`];
+    this.comments = null;
     this.commentsCount = data[`comments`].length;
     this.title = data[`film_info`][`title`];
     this.alternativeTitle = data[`film_info`][`alternative_title`];

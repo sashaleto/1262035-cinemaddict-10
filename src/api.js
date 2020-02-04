@@ -1,10 +1,11 @@
 import FilmModel from './models/film.js';
+import {Comment} from "./models/comment";
 
 const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
-  DELETE: `DELETE`
+  DELETE: `DELETE`,
 };
 
 const checkStatus = (response) => {
@@ -35,6 +36,12 @@ const API = class {
     return this._load({url: `movies`})
       .then((response) => response.json())
       .then(FilmModel.parseFilms);
+  }
+
+  getComments(filmId) {
+    return this._load({url: `comments/${filmId}`})
+      .then((response) => response.json())
+      .then(Comment.parseComments);
   }
 };
 

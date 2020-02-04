@@ -1,6 +1,8 @@
+import API from "../api";
 import FilmCardComponent from "../components/film-card";
 import FilmPopupComponent from "../components/film-popup";
 import {remove, render, replace, RenderPosition} from "../utils/render";
+import {END_POINT, AUTHORIZATION} from "../connection";
 import {commentDateFormat} from "../utils";
 
 const Mode = {
@@ -66,6 +68,7 @@ export default class MovieController {
     remove(this._filmPopupComponent);
     this._filmPopupComponent = null;
     this._mode = Mode.DEFAULT;
+    this._film.comments = null;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onCtrlEnterKeysDown);
   }
@@ -121,6 +124,8 @@ export default class MovieController {
     });
     this._filmComponent.setAddToFavoritesListener(addToFavoritesHandler);
 
+    const api = new API(END_POINT, AUTHORIZATION);
+
     const showPopup = () => {
       this._onViewChange();
       this._filmPopupComponent = new FilmPopupComponent();
@@ -158,7 +163,12 @@ export default class MovieController {
       document.addEventListener(`keydown`, this._onEscKeyDown);
       document.addEventListener(`keydown`, this._onCtrlEnterKeysDown);
     };
-    this._filmComponent.setOpenPopupListeners(showPopup);
+    this._filmComponent.setOpenPopupListeners(() => {
+      api.getComments(film.id).then((comments) => {
+        film.comments = comments;
+        showPopup();
+      });
+    });
 
     if (previousFilmComponent) {
       replace(previousFilmComponent, this._filmComponent);
