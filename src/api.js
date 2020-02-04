@@ -70,6 +70,10 @@ const API = class {
         };
       });
   }
+
+  deleteComment(id) {
+    return this._load({url: `comments/${id}`, method: Method.DELETE});
+  }
 };
 
 export default API;

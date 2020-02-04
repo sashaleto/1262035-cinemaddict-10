@@ -25,6 +25,7 @@ export default class MovieController {
     this._removePopup = this._removePopup.bind(this);
     this._buildHandler = this._buildHandler.bind(this);
     this._submitComment = this._submitComment.bind(this);
+    this._deleteComment = this._deleteComment.bind(this);
 
     this._mode = Mode.DEFAULT;
 
@@ -62,6 +63,17 @@ export default class MovieController {
     } else {
       throw new Error(`Fill in comment and pick one of emoji`);
     }
+  }
+
+  _deleteComment(e) {
+    const commentId = e.target.dataset.commentId;
+
+    this._api.deleteComment(commentId).then(() => {
+      this._filmPopupComponent.deleteComment(commentId);
+      this._filmPopupComponent.rerender();
+      this._film.commentsCount--;
+      this._filmsModel.updateFilm(this._film.id, this._film);
+    });
   }
 
   _removePopup() {
@@ -142,15 +154,7 @@ export default class MovieController {
       });
       this._filmPopupComponent.setResetUserRatingHandler(resetUserRatingHandler);
 
-      const deleteCommentHandler = this._buildHandler((e, newFilm) => {
-        const commentId = e.target.dataset.commentId;
-        const index = newFilm.comments.findIndex((it) => it.id === commentId);
-        if (index === -1) {
-          return;
-        }
-        newFilm.comments = [].concat(newFilm.comments.slice(0, index), newFilm.comments.slice(index + 1));
-      });
-      this._filmPopupComponent.setDeleteCommentListener(deleteCommentHandler);
+      this._filmPopupComponent.setDeleteCommentListener(this._deleteComment);
 
       document.addEventListener(`keydown`, this._onEscKeyDown);
       document.addEventListener(`keydown`, this._onCtrlEnterKeysDown);

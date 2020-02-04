@@ -240,6 +240,10 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
     this._comments = comments;
   }
 
+  deleteComment(commentId) {
+    this._comments = this._comments.filter((comment) => comment.id !== commentId);
+  }
+
   getNewCommentData() {
     const checkedEmotion = this.getElement().querySelector(`[name="comment-emoji"]:checked`);
     const text = this.getElement().querySelector(`.film-details__comment-input`).value;
