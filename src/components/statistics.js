@@ -1,6 +1,10 @@
 import AbstractSmartComponent from "./abstract-smart";
 import moment from "moment";
 import {RangeType} from "../constants";
+import Chart from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import {getWatchedFilmsCount, sortGenresByCount} from "../utils/statistics";
+import {ratingMapper} from "../utils";
 
 const STATS_PERIOD_FOR_PREFIX = `statistic-`;
 const NAV_ITEMS = Object.keys(RangeType);
@@ -41,19 +45,20 @@ const makePeriodFilterTemplate = (activeItem) => {
   }).join(``);
 };
 
-const createStatisticsTemplate = (stats, activeFilterItem) => {
+const createStatisticsTemplate = (stats, activeFilterItem, watchedFilmsCount) => {
   const watchedMoviesCount = stats.watchedMoviesCount;
   const totalMoviesDuration = stats.totalDuration;
   const topGenreName = (typeof stats.topGenre !== undefined) ? stats.topGenre : `-`;
   const totalDurationTemplate = totalMoviesDuration ? makeTotalDurationTemplate(totalMoviesDuration) : `-`;
   const periodTemplate = makePeriodFilterTemplate(activeFilterItem);
+  const userRank = ratingMapper(watchedFilmsCount);
 
   return `
     <section class="statistic">
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">Sci-Fighter</span>
+      <span class="statistic__rank-label">${userRank}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -77,7 +82,9 @@ const createStatisticsTemplate = (stats, activeFilterItem) => {
     </ul>
 
     <div class="statistic__chart-wrap">
-      <canvas class="statistic__chart" width="1000"></canvas>
+      <canvas class="statistic__chart" width="1000">
+      
+      </canvas>
     </div>
 
   </section>
@@ -85,15 +92,20 @@ const createStatisticsTemplate = (stats, activeFilterItem) => {
 };
 
 export default class StatisticsComponent extends AbstractSmartComponent {
-  constructor(stats) {
+  constructor(stats, filmsModel) {
     super();
     this._stats = stats;
+    this._filmsModel = filmsModel;
+    this._watchedFilmsCount = getWatchedFilmsCount(this._filmsModel.getAllFilms());
     this._changePeriodClickHandler = null;
     this._activeNavItem = RangeType.ALL;
+    this._chart = null;
+    this._renderChart();
+    this._renderChart = this._renderChart.bind(this);
   }
 
   getTemplate() {
-    return createStatisticsTemplate(this._stats, this._activeNavItem);
+    return createStatisticsTemplate(this._stats, this._activeNavItem, this._watchedFilmsCount);
   }
 
   setStats(stats) {
@@ -102,6 +114,41 @@ export default class StatisticsComponent extends AbstractSmartComponent {
 
   recoveryListeners() {
     this.setChangePeriodClickHandler(this._changePeriodClickHandler);
+    this._renderChart();
+  }
+
+  _renderChart() {
+    if (this._chart) {
+      this._chart.destroy();
+    }
+    const canvas = this.getElement().querySelector(`.statistic__chart`).getContext(`2d`);
+    const sortedGenres = sortGenresByCount(this._stats.genresStats);
+    this._chart = new Chart(canvas, {
+      plugins: [ChartDataLabels],
+      type: `horizontalBar`,
+      data: {
+        labels: sortedGenres.map((countedGenre) => countedGenre.genre),
+        datasets: [{
+          label: `# of Votes`,
+          data: sortedGenres.map((countedGenre) => countedGenre.count),
+          backgroundColor: sortedGenres.map(() => `#ffe800`),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              display: false,
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
   }
 
   setChangePeriodClickHandler(handler) {

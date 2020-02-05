@@ -68,12 +68,16 @@ export const getStatsByType = (films, type) => {
   stats.watchedMoviesCount = getWatchedFilmsCount(filteredFilms);
   stats.totalDuration = countTotalDuration(filteredFilms);
   stats.genresStats = makeAllGenresObject(filteredFilms);
-  stats.topGenre = Object.keys(stats.genresStats).map((key) => {
-    return {
-      genre: key,
-      count: stats.genresStats[key]
-    };
-  }).sort((a, b) => a.count - b.count)[0].genre;
+  stats.topGenre = sortGenresByCount(stats.genresStats)[0].genre;
 
   return stats;
+};
+
+export const sortGenresByCount = (genresStats) => {
+  return Object.keys(genresStats).map((key) => {
+    return {
+      genre: key,
+      count: genresStats[key],
+    };
+  }).sort((a, b) => b.count - a.count);
 };

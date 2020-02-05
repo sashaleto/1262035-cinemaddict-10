@@ -1,17 +1,5 @@
 import AbstractComponent from "./abstract";
-
-const ratingMapper = (rating) => {
-  switch (true) {
-    case (rating >= 1 && rating <= 10):
-      return `Novice`;
-    case (rating >= 11 && rating <= 20):
-      return `Fan`;
-    case (rating >= 21):
-      return `Movie buff`;
-    default:
-      return ``;
-  }
-};
+import {ratingMapper} from "../utils";
 
 const createUserProfileTemplate = (profileRating) => {
   const userRank = ratingMapper(profileRating);

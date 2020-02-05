@@ -23,7 +23,7 @@ export default class PageController {
     this._noFilmsComponent = new NoFilmsComponent();
     this._sortingComponent = new SortingComponent();
     this._boardComponent = new BoardComponent();
-    this._statisticsComponent = new StatisticsComponent(getStatsByType(this._filmsModel.getAllFilms(), `ALL`));
+    this._statisticsComponent = new StatisticsComponent(getStatsByType(this._filmsModel.getAllFilms(), `ALL`), this._filmsModel);
     this._allFilmsComponent = new FilmListComponent(`films-list`, `All movies. Upcoming`, true);
     this._topRatedComponent = new FilmListComponent(`films-list--extra`, `Top rated`, false);
     this._mostCommentedComponent = new FilmListComponent(`films-list--extra`, `Most commented`, false);
@@ -177,6 +177,7 @@ export default class PageController {
     render(this._container, this._sortingComponent, RenderPosition.BEFOREEND);
     render(this._container, this._boardComponent, RenderPosition.BEFOREEND);
     render(this._container, this._statisticsComponent, RenderPosition.BEFOREEND);
+    this._statisticsComponent.hide();
 
     const allFilmsComponent = this._allFilmsComponent;
 
