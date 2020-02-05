@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract";
+import AbstractComponent from './abstract';
 
 const createShowMoreBtnTemplate = () => {
   return `<button class="films-list__show-more">Show more</button>`;

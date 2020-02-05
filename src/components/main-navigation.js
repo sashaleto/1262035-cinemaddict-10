@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract";
+import AbstractComponent from './abstract';
 
 const FILTER_HREF_PREFIX = `#`;
 
@@ -51,21 +51,35 @@ export default class NavigationComponent extends AbstractComponent {
     return this._currentNavItem;
   }
 
+  _setCurrentNavItem(target) {
+    this._getCurrentNavItem().classList.remove(`main-navigation__item--active`);
+    target.classList.add(`main-navigation__item--active`);
+    this._currentNavItem = target;
+  }
+
   setFilterChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
-      if (this._getCurrentNavItem() === evt.target || !evt.target.hash) {
+      if (this._getCurrentNavItem() ===
+        evt.target ||
+        !evt.target.hash ||
+        evt.target.classList.contains(`main-navigation__item--additional`)) {
         return;
       }
 
       const filterName = getFilterNameByHash(evt.target.hash);
-
-      this._getCurrentNavItem().classList.remove(`main-navigation__item--active`);
-      evt.target.classList.add(`main-navigation__item--active`);
-      this._currentNavItem = evt.target;
-
+      this._setCurrentNavItem(evt.target);
       handler(filterName);
     });
+  }
+
+  setStatisticsClickHandler(handler) {
+    this.getElement().querySelector(`.main-navigation__item--additional`)
+      .addEventListener(`click`, (evt) => {
+        evt.preventDefault();
+        this._setCurrentNavItem(evt.target);
+        handler();
+      });
   }
 }

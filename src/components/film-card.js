@@ -1,13 +1,14 @@
-import AbstractComponent from "./abstract";
-import {runtimeFormat} from "../utils";
-import moment from "moment";
+import AbstractComponent from './abstract';
+import {runtimeFormat} from '../utils';
+import moment from 'moment';
+
+const DESCRIPTION_MAX_LENGTH = 140;
 
 const makeShortFilmDescription = (description) => {
-  const symbolsCount = 140;
   let shortDescription = description;
 
-  if (description.length > symbolsCount) {
-    shortDescription = description.slice(0, symbolsCount) + `...`;
+  if (description.length > DESCRIPTION_MAX_LENGTH) {
+    shortDescription = description.slice(0, DESCRIPTION_MAX_LENGTH) + `...`;
   }
 
   return shortDescription;

@@ -1,7 +1,7 @@
-import FilmModel from "../models/film";
-import FilmCardComponent from "../components/film-card";
-import FilmPopupComponent from "../components/film-popup";
-import {remove, render, replace, RenderPosition} from "../utils/render";
+import {remove, render, replace, RenderPosition} from '../utils/render';
+import FilmModel from '../models/film';
+import FilmCardComponent from '../components/film-card';
+import FilmPopupComponent from '../components/film-popup';
 
 const Mode = {
   DEFAULT: `default`,

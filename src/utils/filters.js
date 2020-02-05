@@ -1,4 +1,4 @@
-import {FilterType} from "../constants";
+import {FilterType} from '../constants';
 
 export const getFavoritesFilms = (films) => {
   return films.filter((film) => !!film.userDetails.favorite);

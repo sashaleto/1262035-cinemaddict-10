@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract";
+import AbstractComponent from './abstract';
 
 const createFilmsBoardTemplate = () => {
   return `<section class="films"></section>`;

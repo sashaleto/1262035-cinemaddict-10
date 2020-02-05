@@ -1,11 +1,13 @@
-import {remove, render, RenderPosition} from "../utils/render";
-import {sortFilmsBy} from "../utils";
-import FilmListComponent from "../components/films-list";
-import ShowMoreComponent from "../components/show-more-button";
-import NoFilmsComponent from "../components/no-films";
-import SortingComponent, {SortType} from "../components/sorting";
-import BoardComponent from "../components/board";
-import MovieController from "./movie";
+import {remove, render, RenderPosition} from '../utils/render';
+import {sortFilmsBy} from '../utils';
+import {getStatsByType} from '../utils/statistics';
+import FilmListComponent from '../components/films-list';
+import ShowMoreComponent from '../components/show-more-button';
+import NoFilmsComponent from '../components/no-films';
+import SortingComponent, {SortType} from '../components/sorting';
+import BoardComponent from '../components/board';
+import MovieController from './movie';
+import StatisticsComponent from '../components/statistics';
 
 const EXTRA_FILMS_COUNT = 2;
 const INITIALLY_SHOWN_FILMS_COUNT = 5;
@@ -21,6 +23,7 @@ export default class PageController {
     this._noFilmsComponent = new NoFilmsComponent();
     this._sortingComponent = new SortingComponent();
     this._boardComponent = new BoardComponent();
+    this._statisticsComponent = new StatisticsComponent(getStatsByType(this._filmsModel.getAllFilms(), `ALL`), this._filmsModel);
     this._allFilmsComponent = new FilmListComponent(`films-list`, `All movies. Upcoming`, true);
     this._topRatedComponent = new FilmListComponent(`films-list--extra`, `Top rated`, false);
     this._mostCommentedComponent = new FilmListComponent(`films-list--extra`, `Most commented`, false);
@@ -41,6 +44,9 @@ export default class PageController {
 
     this._onModelChange = this._onModelChange.bind(this);
     this._filmsModel.setDataChangeHandler(this._onModelChange);
+
+    this._onStatisticsPeriodChange = this._onStatisticsPeriodChange.bind(this);
+    this._statisticsComponent.setChangePeriodClickHandler(this._onStatisticsPeriodChange);
   }
 
   _renderCommonFilms() {
@@ -147,11 +153,31 @@ export default class PageController {
     this._shownFilmsCount = 0;
   }
 
+  showStatistics() {
+    this._sortingComponent.hide();
+    this._boardComponent.hide();
+    this._statisticsComponent.show();
+  }
+
+  _onStatisticsPeriodChange(period) {
+    const stats = getStatsByType(this._filmsModel.getAllFilms(), period);
+    this._statisticsComponent.setStats(stats);
+    this._statisticsComponent.rerender();
+  }
+
+  showBoard() {
+    this._statisticsComponent.hide();
+    this._sortingComponent.show();
+    this._boardComponent.show();
+  }
+
   render() {
     const films = this._filmsModel.getFilms();
 
     render(this._container, this._sortingComponent, RenderPosition.BEFOREEND);
     render(this._container, this._boardComponent, RenderPosition.BEFOREEND);
+    render(this._container, this._statisticsComponent, RenderPosition.BEFOREEND);
+    this._statisticsComponent.hide();
 
     const allFilmsComponent = this._allFilmsComponent;
 

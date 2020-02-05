@@ -34,12 +34,6 @@ export const commentDateFormat = (date) => {
   return moment(date).format(`YYYY/MM/DD HH:MM`);
 };
 
-export const getWatchedFilmsCount = (films) => {
-  return films.filter((film) => {
-    return !!film.userDetails.watchingDate;
-  }).length;
-};
-
 export const makeRandomDate = () => {
   const targetDate = new Date();
 
@@ -72,4 +66,17 @@ export const shakeAnimation = (target, duration) => {
   setTimeout(() => {
     target.style.animation = ``;
   }, duration);
+};
+
+export const ratingMapper = (rating) => {
+  switch (true) {
+    case (rating >= 1 && rating <= 10):
+      return `Novice`;
+    case (rating >= 11 && rating <= 20):
+      return `Fan`;
+    case (rating >= 21):
+      return `Movie buff`;
+    default:
+      return ``;
+  }
 };

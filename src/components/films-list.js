@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract";
+import AbstractComponent from './abstract';
 
 const createFilmListTemplate = (sectionClass, listTitle, isTitleHidden) => {
   return `

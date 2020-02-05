@@ -1,12 +1,12 @@
-import UserProfile from './components/user-profile';
-import FooterStatistics from "./components/footer-statistics";
-import PageController from "./controllers/page";
-import FilterController from "./controllers/filter";
-import Movies from "./models/movies";
-import API from "./api";
-import {getWatchedFilmsCount} from './utils';
 import {RenderPosition, render} from './utils/render';
-import {END_POINT, AUTHORIZATION} from "./connection";
+import {END_POINT, AUTHORIZATION} from './connection';
+import {getWatchedFilmsCount} from './utils/statistics';
+import UserProfile from './components/user-profile';
+import FooterStatistics from './components/footer-statistics';
+import PageController from './controllers/page';
+import FilterController from './controllers/filter';
+import Movies from './models/movies';
+import API from './api';
 
 const api = new API(END_POINT, AUTHORIZATION);
 
@@ -25,12 +25,11 @@ api.getFilms()
 
     render(headerElement, new UserProfile(userRating), RenderPosition.BEFOREEND);
 
-    const filters = new FilterController(mainElement, filmsModel);
-    filters.render();
-
     const page = new PageController(mainElement, filmsModel, api);
+    const filters = new FilterController(mainElement, filmsModel, page);
+
+    filters.render();
     page.render();
 
     render(footerElement, new FooterStatistics(films), RenderPosition.BEFOREEND);
   });
-

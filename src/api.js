@@ -1,5 +1,5 @@
-import FilmModel from './models/film.js';
-import {Comment} from "./models/comment";
+import FilmModel from './models/film';
+import {Comment} from './models/comment';
 
 const Method = {
   GET: `GET`,
@@ -32,11 +32,11 @@ const API = class {
       });
   }
 
-  updateFilm(id, data) {
+  updateFilm(id, film) {
     return this._load({
       url: `movies/${id}`,
       method: Method.PUT,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(film.toRAW()),
       headers: new Headers({'Content-Type': `application/json`}),
     })
       .then((response) => response.json())
