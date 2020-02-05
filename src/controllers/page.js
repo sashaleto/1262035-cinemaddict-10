@@ -59,7 +59,6 @@ export default class PageController {
         break;
     }
 
-    // const sortedAndCut = sortedFilms.slice(this._shownFilmsCount, maxCount);
     sortedFilms = sortedFilms.slice(0, this._maxAllowedFilms);
 
     this._renderFilms(sortedFilms, this._allFilmsComponent.getFilmsListContainer());
@@ -84,7 +83,7 @@ export default class PageController {
   _renderFilms(films, filmsContainer = this._allFilmsComponent.getFilmsListContainer()) {
     // для управления всеми созданными контроллерами фильмов
     const newControllers = films.map((film) => {
-      const controller = new MovieController(filmsContainer, this._onDataChange, this._onViewChange, this._api);
+      const controller = new MovieController(filmsContainer, this._onDataChange, this._onViewChange, this._api, this._filmsModel);
       controller.render(film);
       return controller;
     });

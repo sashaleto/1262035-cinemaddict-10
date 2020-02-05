@@ -66,3 +66,10 @@ export const sortFilmsBy = (films, property) => {
   });
 };
 
+export const shakeAnimation = (target, duration) => {
+  target.style.animation = `shake ${duration / 1000}s`;
+
+  setTimeout(() => {
+    target.style.animation = ``;
+  }, duration);
+};

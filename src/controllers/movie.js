@@ -2,7 +2,6 @@ import FilmModel from "../models/film";
 import FilmCardComponent from "../components/film-card";
 import FilmPopupComponent from "../components/film-popup";
 import {remove, render, replace, RenderPosition} from "../utils/render";
-import {commentDateFormat} from "../utils";
 
 const Mode = {
   DEFAULT: `default`,
@@ -10,12 +9,13 @@ const Mode = {
 };
 
 export default class MovieController {
-  constructor(container, onDataChange, onViewChange, api) {
+  constructor(container, onDataChange, onViewChange, api, filmsModel) {
     this._container = container;
     this._popupContainer = document.querySelector(`body`);
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._api = api;
+    this._filmsModel = filmsModel;
 
     this._filmComponent = null;
     this._filmPopupComponent = null;
@@ -24,6 +24,9 @@ export default class MovieController {
     this._onCtrlEnterKeysDown = this._onCtrlEnterKeysDown.bind(this);
     this._removePopup = this._removePopup.bind(this);
     this._buildHandler = this._buildHandler.bind(this);
+    this._submitComment = this._submitComment.bind(this);
+    this._deleteComment = this._deleteComment.bind(this);
+    this._setUserRating = this._setUserRating.bind(this);
 
     this._mode = Mode.DEFAULT;
 
@@ -46,22 +49,53 @@ export default class MovieController {
     }
   }
 
-  _submitComment(evt) {
-    const now = new Date().toDateString();
-    const data = this._filmPopupComponent.getNewCommentData();
+  _submitComment(e) {
+    const commentData = this._filmPopupComponent.getNewCommentData();
+    this._filmPopupComponent.toggleCommentFieldState(`disabled`);
+    e.target.style.outline = `none`;
 
-    if (data.emotion && data.text) {
-      const newData = Object.assign(data, {
-        id: String(Date.parse(now)) + String(Math.random()),
-        author: `qwerty`,
-        date: commentDateFormat(new Date()),
-      });
-      this._buildHandler((e, newFilm) => {
-        newFilm.comments.push(newData);
-      })(evt, this._film);
+    if (commentData.emotion && commentData.text) {
+      commentData.date = new Date();
+
+      this._api.postComment(commentData, this._film.id)
+        .then((movieWithComment) => {
+          this._filmPopupComponent.setComments(movieWithComment.comments);
+          this._filmsModel.updateFilm(movieWithComment.movie.id, movieWithComment.movie);
+          this._filmPopupComponent.rerender();
+        }).catch(() => {
+          this._filmPopupComponent.makePostCommentFailWarning();
+        });
     } else {
+      this._filmPopupComponent.toggleCommentFieldState(`enabled`);
       throw new Error(`Fill in comment and pick one of emoji`);
     }
+  }
+
+  _deleteComment(e) {
+    const commentId = e.target.dataset.commentId;
+
+    this._api.deleteComment(commentId).then(() => {
+      this._filmPopupComponent.deleteComment(commentId);
+      this._filmPopupComponent.rerender();
+      this._film.commentsCount--;
+      this._filmsModel.updateFilm(this._film.id, this._film);
+    });
+  }
+
+  _setUserRating(e) {
+    this._filmPopupComponent.toggleRatingFormState(`disabled`);
+    const oldRating = this._film.userDetails.personalRating;
+    this._film.userDetails.personalRating = +e.target.value;
+
+    this._api.updateFilm(this._film.id, this._film)
+      .then(() => {
+        this._filmPopupComponent.rerender();
+        this._filmsModel.updateFilm(this._film.id, this._film);
+      }).catch(() => {
+        this._filmPopupComponent.makeRatingScoreFailWarning();
+        this._film.userDetails.personalRating = oldRating;
+        e.target.checked = false;
+      });
   }
 
   _removePopup() {
@@ -71,6 +105,7 @@ export default class MovieController {
     this._film.comments = null;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onCtrlEnterKeysDown);
+    document.querySelector(`body`).classList.remove(`hide-overflow`);
   }
 
   setDefaultView() {
@@ -117,11 +152,12 @@ export default class MovieController {
     });
     this._filmComponent.setAddToFavoritesListener(addToFavoritesHandler);
 
-    const showPopup = () => {
+    const showPopup = (comments) => {
       this._onViewChange();
       this._filmPopupComponent = new FilmPopupComponent();
       this._mode = Mode.POPUP;
       this._filmPopupComponent.setFilm(film);
+      this._filmPopupComponent.setComments(comments);
 
       render(this._popupContainer, this._filmPopupComponent, RenderPosition.BEFOREEND);
 
@@ -129,11 +165,7 @@ export default class MovieController {
       this._filmPopupComponent.setAddToWatchListListener(addToWatchListHandler);
       this._filmPopupComponent.setMarkAsWatchedListener(markAsWatchedHandler);
       this._filmPopupComponent.setAddToFavoritesListener(addToFavoritesHandler);
-
-      const userRatingScoreHandler = this._buildHandler((e, newFilm) => {
-        newFilm.userDetails.personalRating = +e.target.value;
-      });
-      this._filmPopupComponent.setUserRatingScoreHandler(userRatingScoreHandler);
+      this._filmPopupComponent.setUserRatingScoreHandler(this._setUserRating);
 
       const resetUserRatingHandler = this._buildHandler((e, newFilm) => {
         newFilm.userDetails.personalRating = 0;
@@ -141,23 +173,15 @@ export default class MovieController {
       });
       this._filmPopupComponent.setResetUserRatingHandler(resetUserRatingHandler);
 
-      const deleteCommentHandler = this._buildHandler((e, newFilm) => {
-        const commentId = e.target.dataset.commentId;
-        const index = newFilm.comments.findIndex((it) => it.id === commentId);
-        if (index === -1) {
-          return;
-        }
-        newFilm.comments = [].concat(newFilm.comments.slice(0, index), newFilm.comments.slice(index + 1));
-      });
-      this._filmPopupComponent.setDeleteCommentListener(deleteCommentHandler);
+      this._filmPopupComponent.setDeleteCommentListener(this._deleteComment);
 
       document.addEventListener(`keydown`, this._onEscKeyDown);
       document.addEventListener(`keydown`, this._onCtrlEnterKeysDown);
     };
     this._filmComponent.setOpenPopupListeners(() => {
       this._api.getComments(film.id).then((comments) => {
-        film.comments = comments;
-        showPopup();
+        showPopup(comments);
+        document.querySelector(`body`).classList.add(`hide-overflow`);
       });
     });
 
