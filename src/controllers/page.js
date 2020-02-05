@@ -1,13 +1,13 @@
-import {remove, render, RenderPosition} from "../utils/render";
-import {sortFilmsBy} from "../utils";
-import {getStatsByType} from "../utils/statistics";
-import FilmListComponent from "../components/films-list";
-import ShowMoreComponent from "../components/show-more-button";
-import NoFilmsComponent from "../components/no-films";
-import SortingComponent, {SortType} from "../components/sorting";
-import BoardComponent from "../components/board";
-import MovieController from "./movie";
-import StatisticsComponent from "../components/statistics";
+import {remove, render, RenderPosition} from '../utils/render';
+import {sortFilmsBy} from '../utils';
+import {getStatsByType} from '../utils/statistics';
+import FilmListComponent from '../components/films-list';
+import ShowMoreComponent from '../components/show-more-button';
+import NoFilmsComponent from '../components/no-films';
+import SortingComponent, {SortType} from '../components/sorting';
+import BoardComponent from '../components/board';
+import MovieController from './movie';
+import StatisticsComponent from '../components/statistics';
 
 const EXTRA_FILMS_COUNT = 2;
 const INITIALLY_SHOWN_FILMS_COUNT = 5;

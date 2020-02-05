@@ -1,7 +1,9 @@
-import AbstractSmartComponent from "./abstract-smart";
+import {EMOTIONS} from '../constants';
+import {runtimeFormat, releaseDateFormat, commentDateFormat, shakeAnimation} from '../utils';
 import he from 'he';
-import {runtimeFormat, releaseDateFormat, commentDateFormat, shakeAnimation} from "../utils";
-import {EMOTIONS} from "../constants";
+import AbstractSmartComponent from './abstract-smart';
+
+const MAX_RATING_SCORE = 9;
 
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
@@ -32,7 +34,7 @@ const createCommentsTemplate = (comments) => {
 };
 
 const createUserRatingTemplate = (title, poster, rating) => {
-  const ratingScore = Array(9).fill(``).map((item, index) => {
+  const ratingScore = Array(MAX_RATING_SCORE).fill(``).map((item, index) => {
     const rate = index + 1;
     return `
         <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" 

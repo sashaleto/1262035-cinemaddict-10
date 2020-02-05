@@ -1,7 +1,7 @@
-import NavigationComponent from "../components/main-navigation";
-import {RenderPosition, render, replace} from "../utils/render";
-import {FilterType} from "../constants";
-import {getFilmsByFilter} from "../utils/filters";
+import {RenderPosition, render, replace} from '../utils/render';
+import {FilterType} from '../constants';
+import {getFilmsByFilter} from '../utils/filters';
+import NavigationComponent from '../components/main-navigation';
 
 export default class FilterController {
   constructor(container, filmsModel, pageController) {

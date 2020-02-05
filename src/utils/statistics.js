@@ -1,13 +1,5 @@
-import {getWatchedFilms} from "./filters";
-import {RangeType} from "../constants";
-
-export const getWatchedFilmsCount = (films) => {
-  return getWatchedFilms(films).length;
-};
-
-export const countTotalDuration = (films) => {
-  return films.map((film) => film.runtime).reduce((a, b) => a + b, 0);
-};
+import {getWatchedFilms} from './filters';
+import {RangeType} from '../constants';
 
 const makeAllGenresObject = (films) => {
   const stats = {};
@@ -28,6 +20,14 @@ const filterFilmsByTimeRange = (dateFrom, films) => {
 
     return watchingDate >= dateFrom;
   });
+};
+
+export const getWatchedFilmsCount = (films) => {
+  return getWatchedFilms(films).length;
+};
+
+export const countTotalDuration = (films) => {
+  return films.map((film) => film.runtime).reduce((a, b) => a + b, 0);
 };
 
 export const getStatsByType = (films, type) => {

@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract";
+import AbstractComponent from './abstract';
 
 const FILTER_HREF_PREFIX = `#`;
 

@@ -129,7 +129,7 @@ export default class StatisticsComponent extends AbstractSmartComponent {
       data: {
         labels: sortedGenres.map((countedGenre) => countedGenre.genre),
         datasets: [{
-          label: `# of Votes`,
+          label: ``,
           data: sortedGenres.map((countedGenre) => countedGenre.count),
           backgroundColor: sortedGenres.map(() => `#ffe800`),
           borderWidth: 0
@@ -144,6 +144,17 @@ export default class StatisticsComponent extends AbstractSmartComponent {
             ticks: {
               display: false,
               beginAtZero: true
+            },
+            gridLines: {
+              drawOnChartArea: false,
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            },
+            gridLines: {
+              drawOnChartArea: false,
             }
           }]
         }

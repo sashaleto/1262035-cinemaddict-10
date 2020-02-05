@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract";
+import AbstractComponent from './abstract';
 
 export const SortType = {
   DATE_DOWN: `date-down`,

@@ -1,5 +1,5 @@
-import AbstractComponent from "./abstract";
-import {ratingMapper} from "../utils";
+import {ratingMapper} from '../utils';
+import AbstractComponent from './abstract';
 
 const createUserProfileTemplate = (profileRating) => {
   const userRank = ratingMapper(profileRating);

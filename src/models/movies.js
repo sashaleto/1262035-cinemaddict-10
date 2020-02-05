@@ -1,5 +1,5 @@
-import {FilterType} from "../constants";
-import {getFilmsByFilter} from "../utils/filters";
+import {FilterType} from '../constants';
+import {getFilmsByFilter} from '../utils/filters';
 
 export default class Movies {
   constructor() {
