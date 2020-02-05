@@ -59,7 +59,6 @@ export default class PageController {
         break;
     }
 
-    // const sortedAndCut = sortedFilms.slice(this._shownFilmsCount, maxCount);
     sortedFilms = sortedFilms.slice(0, this._maxAllowedFilms);
 
     this._renderFilms(sortedFilms, this._allFilmsComponent.getFilmsListContainer());

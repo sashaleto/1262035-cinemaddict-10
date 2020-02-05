@@ -26,6 +26,7 @@ export default class MovieController {
     this._buildHandler = this._buildHandler.bind(this);
     this._submitComment = this._submitComment.bind(this);
     this._deleteComment = this._deleteComment.bind(this);
+    this._setUserRating = this._setUserRating.bind(this);
 
     this._mode = Mode.DEFAULT;
 
@@ -48,8 +49,10 @@ export default class MovieController {
     }
   }
 
-  _submitComment() {
+  _submitComment(e) {
     const commentData = this._filmPopupComponent.getNewCommentData();
+    this._filmPopupComponent.toggleCommentFieldState(`disabled`);
+    e.target.style.outline = `none`;
 
     if (commentData.emotion && commentData.text) {
       commentData.date = new Date();
@@ -59,8 +62,11 @@ export default class MovieController {
           this._filmPopupComponent.setComments(movieWithComment.comments);
           this._filmsModel.updateFilm(movieWithComment.movie.id, movieWithComment.movie);
           this._filmPopupComponent.rerender();
+        }).catch(() => {
+          this._filmPopupComponent.makePostCommentFailWarning();
         });
     } else {
+      this._filmPopupComponent.toggleCommentFieldState(`enabled`);
       throw new Error(`Fill in comment and pick one of emoji`);
     }
   }
@@ -76,6 +82,22 @@ export default class MovieController {
     });
   }
 
+  _setUserRating(e) {
+    this._filmPopupComponent.toggleRatingFormState(`disabled`);
+    const oldRating = this._film.userDetails.personalRating;
+    this._film.userDetails.personalRating = +e.target.value;
+
+    this._api.updateFilm(this._film.id, this._film)
+      .then(() => {
+        this._filmPopupComponent.rerender();
+        this._filmsModel.updateFilm(this._film.id, this._film);
+      }).catch(() => {
+        this._filmPopupComponent.makeRatingScoreFailWarning();
+        this._film.userDetails.personalRating = oldRating;
+        e.target.checked = false;
+      });
+  }
+
   _removePopup() {
     remove(this._filmPopupComponent);
     this._filmPopupComponent = null;
@@ -83,6 +105,7 @@ export default class MovieController {
     this._film.comments = null;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onCtrlEnterKeysDown);
+    document.querySelector(`body`).classList.remove(`hide-overflow`);
   }
 
   setDefaultView() {
@@ -142,11 +165,7 @@ export default class MovieController {
       this._filmPopupComponent.setAddToWatchListListener(addToWatchListHandler);
       this._filmPopupComponent.setMarkAsWatchedListener(markAsWatchedHandler);
       this._filmPopupComponent.setAddToFavoritesListener(addToFavoritesHandler);
-
-      const userRatingScoreHandler = this._buildHandler((e, newFilm) => {
-        newFilm.userDetails.personalRating = +e.target.value;
-      });
-      this._filmPopupComponent.setUserRatingScoreHandler(userRatingScoreHandler);
+      this._filmPopupComponent.setUserRatingScoreHandler(this._setUserRating);
 
       const resetUserRatingHandler = this._buildHandler((e, newFilm) => {
         newFilm.userDetails.personalRating = 0;
@@ -162,6 +181,7 @@ export default class MovieController {
     this._filmComponent.setOpenPopupListeners(() => {
       this._api.getComments(film.id).then((comments) => {
         showPopup(comments);
+        document.querySelector(`body`).classList.add(`hide-overflow`);
       });
     });
 

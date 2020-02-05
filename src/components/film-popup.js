@@ -1,6 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart";
 import he from 'he';
-import {runtimeFormat, releaseDateFormat, commentDateFormat} from "../utils";
+import {runtimeFormat, releaseDateFormat, commentDateFormat, shakeAnimation} from "../utils";
+import {EMOTIONS} from "../constants";
 
 const createGenresTemplate = (genres) => {
   return Array.from(genres).map((genre) => {
@@ -67,6 +68,17 @@ const createUserRatingTemplate = (title, poster, rating) => {
   `;
 };
 
+const createCommentEmotionsTemplate = (emotions) => {
+  return emotions.map((emoji) => {
+    return `
+        <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
+        <label class="film-details__emoji-label" for="emoji-${emoji}">
+          <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="${emoji}">
+        </label>
+    `;
+  }).join(``);
+};
+
 const createFilmPopupTemplate = (film, comments) => {
   const writers = Array.from(film.writers).map((name) => name).join(`, `);
   const actors = Array.from(film.actors).map((name) => name).join(`, `);
@@ -80,6 +92,7 @@ const createFilmPopupTemplate = (film, comments) => {
   const genresTitle = (film.genres.size > 1) ? `Genres` : `Genre`;
 
   const userRating = createUserRatingTemplate(film.title, film.poster, film.userDetails.personalRating);
+  const commentEmotions = createCommentEmotionsTemplate(EMOTIONS);
 
   return `
       <section class="film-details">
@@ -176,25 +189,7 @@ const createFilmPopupTemplate = (film, comments) => {
                 </label>
       
                 <div class="film-details__emoji-list">
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-                  <label class="film-details__emoji-label" for="emoji-smile">
-                    <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-                  </label>
-      
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-                  <label class="film-details__emoji-label" for="emoji-sleeping">
-                    <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-                  </label>
-      
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-gpuke" value="puke">
-                  <label class="film-details__emoji-label" for="emoji-gpuke">
-                    <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-                  </label>
-      
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-                  <label class="film-details__emoji-label" for="emoji-angry">
-                    <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-                  </label>
+                  ${commentEmotions}
                 </div>
               </div>
             </section>
@@ -216,10 +211,16 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
     this._userRatingHandler = null;
     this._resetUserRatingHandler = null;
     this._deleteCommentClickHandler = null;
+    this._userRatingForm = null;
   }
 
   getTemplate() {
     return createFilmPopupTemplate(this._film, this._comments);
+  }
+
+  rerender() {
+    super.rerender();
+    this._userRatingForm = null;
   }
 
   recoveryListeners() {
@@ -253,11 +254,53 @@ export default class FilmPopupComponent extends AbstractSmartComponent {
     };
   }
 
+  toggleCommentFieldState(state) {
+    const field = this.getElement().querySelector(`.film-details__comment-input`);
+    switch (state) {
+      case `disabled`:
+        field.setAttribute(`disabled`, `disabled`);
+        field.style.outline = `none`;
+        break;
+      case `enabled`:
+        field.removeAttribute(`disabled`);
+        break;
+    }
+  }
+
+  toggleRatingFormState(state) {
+    const field = this.getElement().querySelectorAll(`.film-details__user-rating-input`);
+    switch (state) {
+      case `disabled`:
+        field.forEach((radio) => {
+          radio.setAttribute(`disabled`, `disabled`);
+          radio.nextElementSibling.style.background = ``;
+        });
+        break;
+      case `enabled`:
+        field.forEach((radio) => radio.removeAttribute(`disabled`));
+        break;
+    }
+  }
+
+  makeRatingScoreFailWarning() {
+    const checkedRating = this.getElement().querySelector(`.film-details__user-rating-input:checked + .film-details__user-rating-label`);
+    checkedRating.style.background = `red`;
+    shakeAnimation(this._userRatingForm, 1500);
+    this.toggleRatingFormState(`enabled`);
+  }
+
+  makePostCommentFailWarning() {
+    const input = this.getElement().querySelector(`.film-details__comment-input`);
+    input.style.outline = `2px solid red`;
+    shakeAnimation(input, 1500);
+    this.toggleCommentFieldState(`enabled`);
+  }
+
   setUserRatingScoreHandler(handler) {
     this._userRatingHandler = handler;
-    const userRatingScore = this.getElement().querySelector(`.film-details__user-rating-score`);
-    if (userRatingScore) {
-      userRatingScore.addEventListener(`change`, (e) => {
+    this._userRatingForm = this.getElement().querySelector(`.film-details__user-rating-score`);
+    if (this._userRatingForm) {
+      this._userRatingForm.addEventListener(`change`, (e) => {
         this._userRatingHandler(e, this._film);
       });
     }

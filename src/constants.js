@@ -41,9 +41,4 @@ export const FilterType = {
   STATS: `stats`,
 };
 
-export const EMOTIONS = {
-  SMILE: `smile`,
-  SLEEPING: `sleeping`,
-  PUKE: `puke`,
-  ANGRY: `angry`,
-};
+export const EMOTIONS = [`smile`, `sleeping`, `puke`, `angry`];
