@@ -4,7 +4,7 @@ import PageController from "./controllers/page";
 import FilterController from "./controllers/filter";
 import Movies from "./models/movies";
 import API from "./api";
-import {getWatchedFilmsCount} from './utils';
+import {getWatchedFilmsCount} from './utils/statistics';
 import {RenderPosition, render} from './utils/render';
 import {END_POINT, AUTHORIZATION} from "./connection";
 
@@ -33,4 +33,3 @@ api.getFilms()
 
     render(footerElement, new FooterStatistics(films), RenderPosition.BEFOREEND);
   });
-
