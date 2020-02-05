@@ -6,6 +6,7 @@ import NoFilmsComponent from "../components/no-films";
 import SortingComponent, {SortType} from "../components/sorting";
 import BoardComponent from "../components/board";
 import MovieController from "./movie";
+import StatisticsComponent from "../components/statistics";
 
 const EXTRA_FILMS_COUNT = 2;
 const INITIALLY_SHOWN_FILMS_COUNT = 5;
@@ -21,6 +22,7 @@ export default class PageController {
     this._noFilmsComponent = new NoFilmsComponent();
     this._sortingComponent = new SortingComponent();
     this._boardComponent = new BoardComponent();
+    this._statisticsComponent = new StatisticsComponent();
     this._allFilmsComponent = new FilmListComponent(`films-list`, `All movies. Upcoming`, true);
     this._topRatedComponent = new FilmListComponent(`films-list--extra`, `Top rated`, false);
     this._mostCommentedComponent = new FilmListComponent(`films-list--extra`, `Most commented`, false);
@@ -147,11 +149,24 @@ export default class PageController {
     this._shownFilmsCount = 0;
   }
 
+  showStatistics() {
+    this._sortingComponent.hide();
+    this._boardComponent.hide();
+    this._statisticsComponent.show();
+  }
+
+  showBoard() {
+    this._statisticsComponent.hide();
+    this._sortingComponent.show();
+    this._boardComponent.show();
+  }
+
   render() {
     const films = this._filmsModel.getFilms();
 
     render(this._container, this._sortingComponent, RenderPosition.BEFOREEND);
     render(this._container, this._boardComponent, RenderPosition.BEFOREEND);
+    render(this._container, this._statisticsComponent, RenderPosition.BEFOREEND);
 
     const allFilmsComponent = this._allFilmsComponent;
 

@@ -4,9 +4,10 @@ import {FilterType} from "../constants";
 import {getFilmsByFilter} from "../utils/filters";
 
 export default class FilterController {
-  constructor(container, filmsModel) {
+  constructor(container, filmsModel, pageController) {
     this._container = container;
     this._filmsModel = filmsModel;
+    this._pageController = pageController;
     this._activeFilterType = `all`;
 
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -31,6 +32,7 @@ export default class FilterController {
 
     this._filterComponent = new NavigationComponent(filters);
     this._filterComponent.setFilterChangeHandler(this._onFilterChange);
+    this._filterComponent.setStatisticsClickHandler(() => this._pageController.showStatistics());
     if (oldFilterComponent) {
       replace(oldFilterComponent, this._filterComponent);
     } else {
@@ -41,6 +43,7 @@ export default class FilterController {
   _onFilterChange(filterType) {
     this._filmsModel.setFilter(filterType);
     this._activeFilterType = filterType;
+    this._pageController.showBoard();
   }
 
   _onDataChange() {
