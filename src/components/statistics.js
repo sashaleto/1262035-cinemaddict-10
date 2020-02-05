@@ -136,6 +136,15 @@ export default class StatisticsComponent extends AbstractSmartComponent {
         }]
       },
       options: {
+        plugins: {
+          datalabels: {
+            font: {
+              size: 14,
+              style: `bold`,
+            },
+            color: `#121213`
+          }
+        },
         legend: {
           display: false
         },
@@ -147,16 +156,23 @@ export default class StatisticsComponent extends AbstractSmartComponent {
             },
             gridLines: {
               drawOnChartArea: false,
+              drawBorder: false
             }
           }],
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              beginAtZero: true,
+              fontStyle: `bold`,
+              fontColor: `#ffffff`
             },
             gridLines: {
               drawOnChartArea: false,
+              drawBorder: false
             }
           }]
+        },
+        tooltips: {
+          enabled: false
         }
       }
     });
